@@ -5,9 +5,9 @@
   {{- /* logoName 未設定時はサイト名 (site.Title) を使い、設定ゼロでもサイト名が出るようにする。 */ -}}
   {{- $logoName := site.Params.logoName | default site.Title }}
   {{- if .heading }}
-  <h1 class="site-title"><a href="{{ "/" | relURL }}">{{ $logoName }}<span class="tld">{{ site.Params.logoTLD }}</span></a></h1>
+  <h1 class="site-title"><a href="{{ site.Home.RelPermalink }}">{{ $logoName }}<span class="tld">{{ site.Params.logoTLD }}</span></a></h1>
   {{- else }}
-  <a class="site-title" href="{{ "/" | relURL }}">{{ $logoName }}<span class="tld">{{ site.Params.logoTLD }}</span></a>
+  <a class="site-title" href="{{ site.Home.RelPermalink }}">{{ $logoName }}<span class="tld">{{ site.Params.logoTLD }}</span></a>
   {{- end }}
   <span class="kicker logo-kicker">{{ site.Params.kicker }}</span>
 </div>
