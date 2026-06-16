@@ -1,0 +1,6 @@
+{{- /* h2 には地形図ふうの連番 <i>NN</i> を付ける（.Ordinal はページ内の見出し通し番号）。 */ -}}
+{{- if eq .Level 2 -}}
+<h2 id="{{ .Anchor }}"><i>{{ printf "%02d" (add .Ordinal 1) }}</i>{{ .Text }}</h2>
+{{- else -}}
+<h{{ .Level }} id="{{ .Anchor }}">{{ .Text }}</h{{ .Level }}>
+{{- end -}}

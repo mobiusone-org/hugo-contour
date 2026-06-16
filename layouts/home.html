@@ -1,0 +1,19 @@
+{{ define "main" }}
+<canvas id="terrain" data-contour></canvas>
+
+<div class="panel">
+  <span class="copyright">© {{ now.Year }} {{ site.Title }}</span>
+</div>
+
+{{ partial "marks.html" . }}
+
+<div class="frame">
+  <main class="menu">
+    {{ partial "menu.html" . }}
+  </main>
+</div>
+
+{{ partial "logo.html" (dict "heading" true) }}
+<span class="axis">{{ site.Params.axis }}</span>
+<span class="coords" id="coords">{{ site.Params.coords }}</span>
+{{ end }}

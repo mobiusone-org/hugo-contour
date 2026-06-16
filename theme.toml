@@ -1,0 +1,13 @@
+name = "Contour"
+license = "MIT"
+licenselink = "https://github.com/mobiusone-org/hugo-contour/blob/main/LICENSE"
+description = "等高線（Contour）をモチーフにした、モノクロームなトポグラフィック・テーマ。"
+homepage = "https://mobiusone.org/"
+demosite = "https://hugo-contour.mobiusone.org/"
+min_version = "0.146.0"
+tags = ["minimal", "monochrome", "canvas", "blog"]
+features = ["blog", "responsive"]
+
+[author]
+  name = "118thmobius"
+  homepage = "https://mobiusone.org/"

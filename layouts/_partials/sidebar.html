@@ -1,0 +1,12 @@
+{{- /* コンテンツページ左側の前景色サイドバー。コンテキストは現在ページ。 */ -}}
+<aside class="sidebar">
+  {{- /* 描画域が狭いぶん cell を細かくする。色は背景色（前景色パネル上に描くため）。 */}}
+  <canvas class="sidebar-terrain" data-contour data-color="--bg-rgb" data-cell="10"></canvas>
+  {{ partial "marks.html" . }}
+  <span class="axis">{{ site.Params.axis }}</span>
+  <span class="coords" id="coords">{{ site.Params.coords }}</span>
+  {{ partial "logo.html" (dict "heading" false) }}
+  <div class="menu">
+    {{ partial "menu.html" . }}
+  </div>
+</aside>

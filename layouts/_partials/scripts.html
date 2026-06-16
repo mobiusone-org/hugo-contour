@@ -1,0 +1,9 @@
+{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") | resources.Concat "js/contour.bundle.js" -}}
+{{- if hugo.IsProduction }}{{ $js = $js | minify | fingerprint }}{{ end -}}
+<script src="{{ $js.RelPermalink }}"{{ with $js.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
+{{- /* 検索ページだけクライアント検索スクリプトを足す。 */ -}}
+{{- if eq .Layout "search" }}
+{{- $search := resources.Get "js/search.js" -}}
+{{- if hugo.IsProduction }}{{ $search = $search | minify | fingerprint }}{{ end -}}
+<script src="{{ $search.RelPermalink }}"{{ with $search.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
+{{- end }}
