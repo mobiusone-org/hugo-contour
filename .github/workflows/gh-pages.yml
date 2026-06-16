@@ -23,6 +23,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # テーマ名（contour）と同じフォルダ名にチェックアウト。
+          path: contour
           fetch-depth: 0  # .GitInfo / .Lastmod 用に全履歴を取得
       - name: Install Hugo (extended)
         run: |
@@ -33,13 +35,13 @@ jobs:
         uses: actions/configure-pages@v5
       - name: Build
         run: |
-          hugo --source exampleSite --themesDir ../.. \
+          hugo --source contour/exampleSite --themesDir ../.. \
             --gc --minify \
             --baseURL "${{ steps.pages.outputs.base_url }}/"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./exampleSite/public
+          path: ./contour/exampleSite/public
 
   deploy:
     needs: build
