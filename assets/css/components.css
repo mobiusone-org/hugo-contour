@@ -1,11 +1,54 @@
-/* Contour theme — 共通コンポーネント。配置（position の座標）は各ページ CSS が持つ。 */
+/* Contour theme — 共通コンポーネント。ページ固有の座標は CSS 変数で差し替える。 */
+
+/* ---- 左の色面（ホームのパネル / コンテンツページのサイドバー） ---- */
+.site-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: var(--sidebar-w);
+  overflow: hidden;
+  background: var(--fg);
+  color: var(--bg);
+}
+
+/* ---- 等高線 canvas ---- */
+.contour-canvas {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  cursor: crosshair;
+}
+
+/* ---- コピーライト ---- */
+.copyright {
+  writing-mode: vertical-rl;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg);
+}
+.site-panel .copyright { color: var(--bg); }
+
+/* ---- 等高線表示領域のフレーム ---- */
+.field-frame {
+  position: fixed;
+  inset: 0;
+  color: var(--field-color, var(--fg));
+  pointer-events: none;
+}
 
 /* ---- + マーク（地図の表示領域を示す）。色は currentColor ---- */
 .mark {
   width: 16px;
   height: 16px;
   pointer-events: none;
-  color: var(--fg);
+  color: inherit;
+}
+.field-frame .mark {
+  position: absolute;
 }
 .mark::before, .mark::after {
   content: "";
@@ -23,6 +66,26 @@
   top: 0;
   height: 100%;
   width: 1px;
+}
+.field-frame .mark.tl {
+  top: var(--frame-pad);
+  left: var(--frame-left, var(--frame-pad));
+  transform: translate(-50%, -50%);
+}
+.field-frame .mark.tr {
+  top: var(--frame-pad);
+  right: var(--frame-right, var(--frame-pad));
+  transform: translate(50%, -50%);
+}
+.field-frame .mark.bl {
+  bottom: var(--frame-pad);
+  left: var(--frame-left, var(--frame-pad));
+  transform: translate(-50%, 50%);
+}
+.field-frame .mark.br {
+  right: var(--frame-right, var(--frame-pad));
+  bottom: var(--frame-pad);
+  transform: translate(50%, 50%);
 }
 
 /* ---- ラベルチップ ---- */
@@ -43,7 +106,6 @@
   align-items: flex-start;
   gap: clamp(24px, 4vh, 40px);
 }
-.menu .kicker { margin-left: 14px; }
 .menu-list {
   display: flex;
   flex-direction: column;
@@ -87,11 +149,16 @@
   color: var(--bg);
 }
 
+.layout-page { --logo-left: var(--panel-logo-left); }
+@media (min-width: 721px) {
+  .layout-home { --logo-left: var(--panel-logo-left); }
+}
+
 /* ---- サイトロゴグループ（サイト名 + kicker） ---- */
 .logo-group {
   position: fixed;
   top: 50%;
-  left: clamp(16px, 2vw, 36px);
+  left: var(--logo-left);
   transform: translateY(-50%);
   display: flex;
   flex-direction: row;
@@ -136,8 +203,7 @@
    ラベルは枠の両 + マーク間に収まるよう max-inline-size で上限を持ち、罫線は flex で
    余白を埋めつつ 48px で頭打ち、幅が足りなければ 0 まで縮んで自動的に消える。これにより
    縦横・デスクトップ/モバイルを問わず「+ マークと重なるなら棒は出さない」が成立する。
-   .axis は常に枠の一辺＝ビューポートのインライン方向いっぱい（100vi）なので共通化できる。
-   .coords は枠幅が文脈ごとに違うため max-inline-size を各ページ CSS で与える。 */
+   axis / coords の最大幅はフレームの文脈ごとに CSS 変数で差し替える。 */
 .axis, .coords {
   font-size: 11px;
   font-weight: 300;
@@ -151,11 +217,30 @@
 .axis {
   letter-spacing: 0.32em;
   opacity: 0.7;
-  max-inline-size: calc(100vi - 104px); /* 一辺(100vi) − 両端の余白(36px) − 余白(16px) ×2 */
+  max-inline-size: var(--axis-max, calc(100vi - var(--frame-pad) - var(--frame-pad) - 32px));
 }
 .coords {
   letter-spacing: 0.12em;
   font-variant-numeric: tabular-nums;
+  max-inline-size: var(--coords-max, calc(100vw - var(--frame-pad) - var(--frame-pad) - 32px));
+}
+.field-frame .axis {
+  position: absolute;
+  top: 50%;
+  right: var(--frame-right, var(--frame-pad));
+  transform: translate(50%, -50%);
+  background: var(--field-label-bg, var(--bg));
+  padding: 12px 0;
+  writing-mode: vertical-rl;
+}
+.field-frame .coords {
+  position: absolute;
+  left: var(--coords-left, 50%);
+  bottom: var(--frame-pad);
+  transform: translate(-50%, 50%);
+  background: var(--field-label-bg, var(--bg));
+  padding: 2px 12px;
+  opacity: 0.9;
 }
 .axis::before, .axis::after,
 .coords::before, .coords::after {

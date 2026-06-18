@@ -6,7 +6,10 @@
   --bg-rgb: 10, 1, 1;     /* canvas 描画用。--bg / --fg と必ず一致させる */
   --fg-rgb: 144, 242, 5;
   --pad: clamp(20px, 3vw, 44px);
-  --sidebar-w: 33.333vw;
+  --sidebar-w: 31.4159vw;
+  --frame-pad: 36px;
+  --logo-left: clamp(16px, 2vw, 36px);
+  --panel-logo-left: clamp(36px, 2.8vw, 52px);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
