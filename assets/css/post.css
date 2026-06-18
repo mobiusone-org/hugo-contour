@@ -25,10 +25,12 @@ body { min-height: 100vh; }
   cursor: crosshair;
 }
 
-/* サイトロゴグループはランディングと同じ見え方のまま（サイドバー基準で配置）。
-   サイト名のスタイル・位置は components.css の共通定義をそのまま使い、ランディングと
-   コンテンツページでデスクトップの表示位置が一致するように上書きしない。 */
-.sidebar .logo-group { position: absolute; }
+/* サイトロゴグループはサイドバー基準で配置する。
+   tight な縦組みでも左端へインクが飛び出さないよう、コンテンツページでは少し内側へ置く。 */
+.sidebar .logo-group {
+  position: absolute;
+  left: clamp(36px, 2.8vw, 52px);
+}
 
 /* + の外側余白はランディング（landing.css）と同じ 36px に統一する。
    中心をサイドバー端から (36px, 36px) に置く。 */
@@ -341,19 +343,18 @@ body { min-height: 100vh; }
     writing-mode: vertical-rl;
     white-space: nowrap; /* 1 列で +枠の縦幅いっぱいに収める（.org が折り返さないように） */
     font-size: 9cqh;
-    line-height: 1.1;
+    line-height: 0.6;
   }
-  /* kicker は装飾用のバッジ。タイトルに合わせるのではなく、+ 枠内に収まる上限だけを
-     与える（自然長は枠を超えるため折り返す）。モバイルではタイトルが小さくなる結果、
-     表示領域がタイトルとほぼ同じ高さに収まる。 */
+  /* kicker は装飾用のバッジ。モバイルでも縦組みロゴの一部として 1 列を保ち、
+     折り返しでブランドのシルエットが崩れないよう字間と余白を詰める。 */
   .sidebar .logo-kicker {
     display: block;
     writing-mode: vertical-rl;
-    white-space: normal;
-    max-height: 64cqh;
-    font-size: 3.2cqh;
-    letter-spacing: 0.16em;
-    padding: 3cqh 3px;
+    white-space: nowrap;
+    max-height: none;
+    font-size: clamp(8px, 2.65cqh, 10px);
+    letter-spacing: 0.08em;
+    padding: 2cqh 3px;
     line-height: 1.3;
   }
 
