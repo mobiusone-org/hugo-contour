@@ -1,0 +1,6 @@
+{{- /* 等高線表示領域の四隅マークと計測ラベル。配置は .field-frame の文脈で決まる。 */ -}}
+<div class="field-frame{{ with .class }} {{ . }}{{ end }}"{{ with .frame }} data-contour-frame="{{ . }}"{{ end }}>
+  {{ partial "marks.html" . }}
+  <span class="axis">{{ site.Params.axis }}</span>
+  <span class="coords" data-contour-coords{{ with .frame }} data-contour-frame="{{ . }}"{{ end }}>{{ site.Params.coords }}</span>
+</div>
