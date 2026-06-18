@@ -4,79 +4,30 @@
 
 body { min-height: 100vh; }
 
-/* ---- サイドバー ---- */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: var(--sidebar-w);
-  background: var(--fg);
-  color: var(--bg);
-  overflow: hidden;
-}
-
 .sidebar-terrain {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  cursor: crosshair;
+}
+
+.sidebar .field-frame {
+  position: absolute;
+  --field-color: var(--bg);
+  --field-label-bg: var(--fg);
+  --coords-max: calc(var(--sidebar-w) - var(--frame-pad) - var(--frame-pad) - 32px);
 }
 
 /* サイトロゴグループはサイドバー基準で配置する。
    tight な縦組みでも左端へインクが飛び出さないよう、コンテンツページでは少し内側へ置く。 */
 .sidebar .logo-group {
   position: absolute;
-  left: clamp(36px, 2.8vw, 52px);
-}
-
-/* + の外側余白はランディング（landing.css）と同じ 36px に統一する。
-   中心をサイドバー端から (36px, 36px) に置く。 */
-.sidebar .mark { position: absolute; color: var(--bg); }
-.sidebar .mark.tl { top: 36px;    left: 36px;  transform: translate(-50%, -50%); }
-.sidebar .mark.tr { top: 36px;    right: 36px; transform: translate(50%, -50%); }
-.sidebar .mark.bl { bottom: 36px; left: 36px;  transform: translate(-50%, 50%); }
-.sidebar .mark.br { bottom: 36px; right: 36px; transform: translate(50%, 50%); }
-
-/* 計測ラベル: ランディングと同じ縦組みのまま、サイドバー右辺の + マークと中央揃え */
-.sidebar .axis {
-  position: absolute;
-  right: 36px; /* + マークの中心線と同一 */
-  top: 50%;
-  transform: translate(50%, -50%);
-  writing-mode: vertical-rl;
-  background: var(--fg);
-  padding: 12px 0;
-  white-space: nowrap;
-}
-
-/* 座標表示: サイドバー下辺の + マークと中央揃え。枠幅はサイドバー幅なので、棒の上限を
-   サイドバー幅基準で与える（左右の + マークと重なる場合は棒が自動的に縮んで消える）。 */
-.sidebar .coords {
-  position: absolute;
-  left: 50%;
-  bottom: 36px;
-  transform: translate(-50%, 50%);
-  background: var(--fg);
-  padding: 2px 12px;
-  opacity: 0.9;
-  max-inline-size: calc(var(--sidebar-w) - 104px);
 }
 
 /* ---- サイドメニュー（ランディングと同一コンポーネントの右合わせ・反転色版） ---- */
 .sidebar .menu {
   position: absolute;
   top: 50%;
-  right: 48px; /* 右辺に沿う縦組みの axis ラベルを避ける */
+  right: calc(var(--frame-pad) + 12px); /* 右辺に沿う縦組みの axis ラベルを避ける */
   transform: translateY(-50%);
   align-items: flex-end;
-}
-.sidebar .menu .kicker {
-  border-color: var(--bg);
-  background: var(--fg);
-  color: var(--bg);
 }
 .sidebar .menu-list { align-items: flex-end; }
 .sidebar .menu-list a {
@@ -103,21 +54,16 @@ body { min-height: 100vh; }
 .post {
   max-width: 760px;
   margin: 0 auto;
-  /* 左右 48px 以上: 左下の縦書きコピーライトと本文が重ならないようにする */
+  /* 左右 48px 以上: 固定配置のコピーライトや viewport 端と本文が詰まりすぎないようにする */
   padding: clamp(48px, 10vh, 120px) clamp(48px, 5vw, 72px);
 }
 
-/* コピーライト: ランディング（左パネル右下）の鏡像として右ペイン左下に縦書き */
+/* コピーライト: デスクトップでは右下に固定し、共通の縦書きを維持する */
 .copyright {
   position: fixed;
-  left: calc(var(--sidebar-w) + var(--pad));
+  right: var(--pad);
   bottom: var(--pad);
-  writing-mode: vertical-rl;
   color: var(--fg);
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 
 .post-meta {
@@ -306,11 +252,6 @@ body { min-height: 100vh; }
 }
 .post-nav .next { text-align: right; }
 
-/* kicker の幅（約 320px）がサイト名と重なるビューポートでは表示しない */
-@media (max-width: 1599px), (max-aspect-ratio: 4/3) {
-  .sidebar .menu .kicker { display: none; }
-}
-
 /* ---- 狭い・縦長のビューポート: サイドバーを上部バンドに ----
    大画面の「縦組みサイト名 / 横並びメニュー」を解消し、
    タイトル・メニューともにヘッダー内で上下中央揃えにし、
@@ -319,20 +260,30 @@ body { min-height: 100vh; }
   .sidebar {
     position: relative;
     width: 100%;
-    /* 外側 36px の + 枠を加えても枠内寸法が従来（232px）のまま保たれる高さ */
+    /* 外側の + 枠を加えても枠内寸法が従来（232px）のまま保たれる高さ */
     height: 304px;
     container-type: size;
   }
   .content { margin-left: 0; }
-  .copyright { display: none; }
   .post { padding-left: 24px; padding-right: 24px; }
+  .copyright {
+    display: block;
+    position: static;
+    width: max-content;
+    margin: 0 24px 24px auto;
+    padding: 0;
+    writing-mode: vertical-rl;
+    font-size: 11px;
+    line-height: 1.4;
+    letter-spacing: 0.12em;
+  }
 
-  /* + マークの外側余白は基準（36px）のまま。バンドでも同じ値を共有する。 */
+  /* + マークの外側余白は var(--frame-pad) のまま。バンドでも同じ値を共有する。 */
 
   /* サイト名 + kicker: 縦書きにして左側上下中央へ */
   .sidebar .logo-group {
     position: absolute;
-    left: 42px; /* 左の + マーク（36px）の内側に、ディセンダ込みで収まる位置 */
+    left: calc(var(--frame-pad) + 6px); /* 左の + マークの内側に、ディセンダ込みで収まる位置 */
     top: 50%;
     transform: translateY(-50%);
     flex-direction: row;
@@ -365,7 +316,7 @@ body { min-height: 100vh; }
     top: auto;
     right: auto;
     left: 50%;
-    bottom: 36px; /* 下辺の + マークと同一線上 */
+    bottom: var(--frame-pad); /* 下辺の + マークと同一線上 */
     transform: translate(-50%, 50%);
     writing-mode: horizontal-tb;
     background: var(--fg);
@@ -373,7 +324,7 @@ body { min-height: 100vh; }
     font-size: 8px;
   }
   /* バンドでも罫線（棒）は固定で消さず、共通の幅追従ロジックに任せる。
-     axis は横組みなので max-inline-size = 100vi(=バンド幅) − 104px を components から継承。 */
+     axis は横組みなので max-inline-size は components のフレーム幅計算に任せる。 */
 
   /* 座標 (coords): 縦書きにして右端中央へ（デスクトップ用の座標設定をリセット）。
      枠の高さはバンド高なので、棒の上限をバンド高基準で与える。 */
@@ -381,7 +332,7 @@ body { min-height: 100vh; }
     position: absolute;
     left: auto;
     bottom: auto;
-    right: 36px; /* 右辺の + マークと同一線上 */
+    right: var(--frame-pad); /* 右辺の + マークと同一線上 */
     top: 50%;
     transform: translate(50%, -50%);
     writing-mode: vertical-rl;
@@ -390,7 +341,7 @@ body { min-height: 100vh; }
     opacity: 0.9;
     font-size: 8px;
     letter-spacing: 0.1em;
-    max-inline-size: calc(100cqh - 104px);
+    max-inline-size: calc(100cqh - var(--frame-pad) - var(--frame-pad) - 32px);
   }
 
   /* メニュー: 右寄せ・縦並びにして右側上下中央へ配置する（座標ラベルを避けるため左に寄せる） */

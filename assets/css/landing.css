@@ -5,44 +5,24 @@ html, body {
   overflow: hidden;
 }
 
-#terrain {
+.page-terrain {
   position: fixed;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  cursor: crosshair;
 }
 
-/* 左1/3の前景色パネル */
-.panel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  bottom: 0;
-  width: var(--sidebar-w);
-  background: var(--fg);
-}
-.panel .copyright {
+/* 左1/PIの前景色パネル */
+.home-panel .copyright {
   position: absolute;
   right: var(--pad);
   bottom: var(--pad);
-  writing-mode: vertical-rl;
-  color: var(--bg);
-  font-size: 16px;
-  font-weight: 500;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
 }
 
-/* + の中心を等高線エリアの端から (36px, 36px) に置く */
-.mark { position: fixed; }
-.mark.tl { top: 36px;    left: calc(var(--sidebar-w) + 36px); transform: translate(-50%, -50%); }
-.mark.tr { top: 36px;    right: 36px;                         transform: translate(50%, -50%); }
-.mark.bl { bottom: 36px; left: calc(var(--sidebar-w) + 36px); transform: translate(-50%, 50%); }
-.mark.br { bottom: 36px; right: 36px;                         transform: translate(50%, 50%); }
+.home-field {
+  --frame-left: calc(var(--sidebar-w) + var(--frame-pad));
+  --coords-left: calc(var(--sidebar-w) + (100vw - var(--sidebar-w)) / 2);
+  --coords-max: calc(100vw - var(--sidebar-w) - var(--frame-pad) - var(--frame-pad) - 32px);
+}
 
-.frame {
+.home-menu-frame {
   position: fixed;
   inset: 0;
   display: flex;
@@ -52,34 +32,29 @@ html, body {
   padding-left: calc(var(--sidebar-w) + var(--pad));
   pointer-events: none;
 }
-.frame a, .frame button { pointer-events: auto; }
-
-/* ページ右端の縦ラベル（右辺の + マークと中央揃え） */
-.axis {
-  position: fixed;
-  right: 36px; /* + マークの中心線と同一 */
-  top: 50%;
-  transform: translate(50%, -50%);
-  background: var(--bg);
-  padding: 12px 0;
-  writing-mode: vertical-rl;
-}
-
-/* ---- 等高線エリア中央下の座標表示（下辺の + マークと中央揃え） ----
-   枠幅は等高線エリア（ビューポート − サイドバー）なので、棒の上限をその幅基準で与える。 */
-.coords {
-  position: fixed;
-  left: calc(var(--sidebar-w) + (100vw - var(--sidebar-w)) / 2);
-  bottom: 36px; /* + マークの中心線と同一 */
-  transform: translate(-50%, 50%);
-  background: var(--bg);
-  padding: 2px 12px;
-  opacity: 0.9;
-  max-inline-size: calc(100vw - var(--sidebar-w) - 104px);
-}
+.home-menu-frame a, .home-menu-frame button { pointer-events: auto; }
 
 @media (max-width: 720px) {
   .site-title { font-size: min(11vw, 9vh); }
-  .axis, .coords { display: none; }
-  .menu-list a { font-size: clamp(26px, 5vh, 44px); }
+  .home-field .axis, .home-field .coords { display: none; }
+  .home-menu-frame {
+    padding-right: var(--frame-pad);
+    padding-left: calc(var(--sidebar-w) + var(--frame-pad));
+  }
+  .menu-list {
+    container-type: inline-size;
+    inline-size: calc(100vw - var(--sidebar-w) - var(--frame-pad) - var(--frame-pad));
+    max-inline-size: calc(100vw - var(--sidebar-w) - var(--frame-pad) - var(--frame-pad));
+  }
+  .menu-list a {
+    max-inline-size: 100%;
+    gap: 0.34em;
+    padding-inline: 0.24em;
+    font-size: clamp(14px, min(5vh, 15.6cqw), 44px);
+    letter-spacing: 0;
+  }
+  .menu-list a i {
+    font-size: 0.36em;
+    letter-spacing: 0.14em;
+  }
 }

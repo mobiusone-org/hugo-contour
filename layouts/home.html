@@ -1,19 +1,17 @@
 {{ define "main" }}
-<canvas id="terrain" data-contour></canvas>
+{{ partial "contour-canvas.html" (dict "id" "terrain" "class" "page-terrain" "frame" "home") }}
 
-<div class="panel">
-  <span class="copyright">© {{ now.Year }} {{ site.Title }}</span>
-</div>
+<aside class="site-panel home-panel">
+  {{ partial "copyright.html" . }}
+</aside>
 
-{{ partial "marks.html" . }}
+{{ partial "field-frame.html" (dict "class" "home-field" "frame" "home") }}
 
-<div class="frame">
+<div class="home-menu-frame">
   <main class="menu">
     {{ partial "menu.html" . }}
   </main>
 </div>
 
 {{ partial "logo.html" (dict "heading" true) }}
-<span class="axis">{{ site.Params.axis }}</span>
-<span class="coords" id="coords">{{ site.Params.coords }}</span>
 {{ end }}
