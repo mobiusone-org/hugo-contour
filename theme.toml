@@ -1,9 +1,9 @@
 name = "Contour"
 license = "MIT"
 licenselink = "https://github.com/mobiusone-org/hugo-contour/blob/main/LICENSE"
-description = "等高線（Contour）をモチーフにした、モノクロームなトポグラフィック・テーマ。"
-homepage = "https://mobiusone.org/"
-demosite = "https://hugo-contour.mobiusone.org/"
+description = "A stylish Hugo theme that blends contour-line motifs with typography."
+homepage = "https://github.com/mobiusone-org/hugo-contour"
+demosite = "https://mobiusone-org.github.io/hugo-contour/"
 min_version = "0.146.0"
 tags = ["minimal", "monochrome", "canvas", "blog"]
 features = ["blog", "responsive"]
