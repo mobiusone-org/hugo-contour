@@ -1,64 +1,78 @@
 # Contour
 
-ノイズ標高場を **marching squares** でその場で輪郭化し、背景に等高線を描く
-モノクロームな Hugo テーマ。画像も SVG も使わず Canvas 2D だけで描画する。
+[English](README.md) | [日本語](README.ja.md)
 
-- Hugo の新しいテンプレートシステム（`baseof.html` / `home.html` / `page.html` /
-  `section.html` / `taxonomy.html` / `term.html`、予約ディレクトリ `_partials` と `_markup`）に準拠。
-- タグ（タクソノミー）・アーカイブ・全文検索を標準でサポート。
-- CSS / JS は Hugo Pipes で結合。本番ビルドでは minify + fingerprint + SRI。
-- 見出し（h2）の連番は `_markup/render-heading.html` が自動付与。
-- コードブロックは色付けせず、テーマの罫線スタイルで表示（`markup.highlight.codeFences = false`）。
+A stylish Hugo theme that blends contour-line motifs with typography.
 
-## 必要環境
+- Built on Hugo's new template system (`baseof.html` / `home.html` /
+  `page.html` / `section.html` / `taxonomy.html` / `term.html`, with the
+  reserved `_partials` and `_markup` directories).
+- Supports tags, archives, and full-text search out of the box.
+- Bundles CSS and JavaScript with Hugo Pipes. Production builds are minified,
+  fingerprinted, and served with SRI metadata.
+- Automatically numbers h2 headings with `_markup/render-heading.html`.
 
-Hugo **extended** v0.146.0 以降（新テンプレートシステムのため）。
+## Requirements
 
-## デモ（exampleSite）
+Hugo **extended** v0.146.0 or later, required for the new template system.
 
-このリポジトリには `exampleSite/` が同梱されている。リポジトリ直下からテーマを
-読み込んでプレビューできる:
+## Live Demo
+
+https://mobiusone-org.github.io/hugo-contour/
+
+## Local Demo (exampleSite)
+
+This repository includes an `exampleSite/`. Clone this repository as `contour`,
+then preview the bundled example site from the repository root:
 
 ```bash
 cd exampleSite
 hugo server --themesDir ../..
 ```
 
-`--themesDir ../..` はテーマ本体（このリポジトリ）を `themes/contour` 相当として
-解決するための指定。リポジトリのディレクトリ名は `contour` である必要がある。
-
-## インストール
+## Installation
 
 ```bash
 git submodule add https://github.com/mobiusone-org/hugo-contour.git themes/contour
 ```
 
-`hugo.toml` に `theme = "contour"` を設定する。
+Then set `theme = "contour"` in your `hugo.toml`.
 
-## 設定
+> **Note:** The folder name must match `theme = "contour"`. The repository is
+> named `hugo-contour`, but the theme folder must be `contour`:
+>
+> ```bash
+> # ✅ correct — folder matches theme = "contour"
+> git submodule add https://github.com/mobiusone-org/hugo-contour.git themes/contour
+>
+> # ❌ wrong — folder name does not match theme = "contour"
+> git submodule add https://github.com/mobiusone-org/hugo-contour.git themes/hugo-contour
+> ```
+
+## Configuration
 
 ```toml
-defaultContentLanguage = "ja"
-locale = "ja-JP"
+defaultContentLanguage = "en"
+locale = "en-US"
 title = "MobiusOne.org"
 theme = "contour"
 
-[taxonomies]               # 標準的な分類。タグ一覧 /tags/ が自動生成される。
+[taxonomies]               # Standard taxonomies. /tags/ is generated automatically.
   tag = "tags"
   category = "categories"
 
-[outputs]                  # /index.json を検索インデックスとして出力する。
+[outputs]                  # Generate /index.json for the search index.
   home = ["html", "json"]
 
 [params]
-  logoName = "MobiusOne"        # ロゴの太字部分
-  logoTLD = ".org"              # ロゴ末尾の細字（TLD）
-  kicker = "Software Engineering — Est. 2014"
-  description = "サイトの説明。"
-  axis = "Elevation / Isoline Field — N=54"   # 地図ふう装飾ラベル
-  coords = "35.6812° N — 139.7671° E"          # 座標表示の初期値（クリックで更新）
+  logoName = "MobiusOne"        # Bold part of the logo
+  logoTLD = ".org"              # Lighter suffix shown after the logo name
+  kicker = "Software Engineering - Est. 2014"
+  description = "Site description."
+  axis = "Elevation / Isoline Field - N=54"   # Map-style decorative label
+  coords = "35.6812 deg N - 139.7671 deg E"   # Initial coordinates, refreshed on click
 
-# メニューは pageRef で実ページに結ぶ（タグ一覧は /tags、検索は /search …）。
+# Use pageRef to connect menu items to real pages.
 [[menu.main]]
   name = "Posts"
   pageRef = "/posts"
@@ -69,50 +83,57 @@ theme = "contour"
   weight = 5
 ```
 
-## コンテンツ
+## Content
 
-| ファイル                      | レイアウト | 用途 |
-|---------------------------|---|---|
-| `content/_index.md`       | `home.html` | ランディング（全画面の等高線＋メニュー） |
-| `content/posts/_index.md` | `section.html` | 記事一覧 |
-| `content/posts/*.md`      | `page.html` | 記事ページ（左サイドバー＋本文） |
-| `content/feature.md`      | `page.html` | 単体ページ（日付・読了時間は出さない） |
-| `content/archives.md`     | `archives.html` | 年ごとの記事アーカイブ（`layout = "archives"`） |
-| `content/search.md`       | `search.html` | 全文検索（`layout = "search"`） |
-| 自動生成                      | `taxonomy.html` / `term.html` | `/tags/`・`/tags/<tag>/` |
+| File | Layout | Purpose |
+|---|---|---|
+| `content/_index.md` | `home.html` | Landing page with full-screen contour lines and the menu |
+| `content/posts/_index.md` | `section.html` | Post list |
+| `content/posts/*.md` | `page.html` | Article pages with a left sidebar and body content |
+| `content/feature.md` | `page.html` | Standalone page without date or reading time |
+| `content/archives.md` | `archives.html` | Yearly article archive (`layout = "archives"`) |
+| `content/search.md` | `search.html` | Full-text search (`layout = "search"`) |
+| Generated automatically | `taxonomy.html` / `term.html` | `/tags/` and `/tags/<tag>/` |
 
-`page.html` はセクション内の記事（`posts/`）では日付・読了時間・タグ・前後ナビを出し、
-ルート直下の単体ページ（`feature.md` など）では見出しと本文だけにする。
+For pages in the `posts/` section, `page.html` displays the date, reading time,
+tags, and previous/next navigation. For standalone pages at the content root,
+such as `feature.md`, it only displays the title and body.
 
-### 検索
+### Search
 
-`hugo.toml` の `[outputs]` で `home` に `json` を足すと、`posts` セクションの記事から
-`/index.json`（タイトル・タグ・要約・本文）が生成される。`content/search.md`
-（`layout = "search"`）が依存ライブラリ無しのクライアント検索 UI を提供し、検索ページの
-ときだけ `assets/js/search.js` が読み込まれる。`?q=...` で初期クエリを渡せる。
-より大規模な索引が必要なら、同じページ構造のまま [Pagefind](https://pagefind.app/)
-等への差し替えも可能。
+Add `json` to the `home` output in `hugo.toml` to generate `/index.json` from
+posts. The index contains each post's title, tags, summary, and body text.
+`content/search.md` (`layout = "search"`) provides a dependency-free client-side
+search UI, and `assets/js/search.js` is loaded only on the search page. You can
+also pass an initial query with `?q=...`.
 
-記事の front matter:
+For larger search indexes, you can replace this with
+[Pagefind](https://pagefind.app/) or a similar tool while keeping the same page
+structure.
+
+Post front matter:
 
 ```yaml
 ---
-title: "記事タイトル"
+title: "Post title"
 date: 2026-06-12
 tags: ["graphics", "canvas"]
 ---
 ```
 
-## 等高線のカスタマイズ
+## Customizing Contour Lines
 
-`canvas[data-contour]` に data 属性で渡す:
+Pass options through data attributes on `canvas[data-contour]`:
 
-- `data-color="--bg-rgb"` — 線色（CSS カスタムプロパティ名、または `"r, g, b"`）
-- `data-cell="10"` — グリッドセルの大きさ (css px、小さいほど高精細)
+- `data-color="--bg-rgb"`: Line color, either a CSS custom property name or an
+  `"r, g, b"` value.
+- `data-cell="10"`: Grid cell size in CSS pixels. Smaller values produce finer
+  detail.
 
-配色は `assets/css/base.css` の `--bg` / `--fg`（および `--bg-rgb` / `--fg-rgb`）で変える。
-RGB 版は描画に使うので必ず一致させること。
+Change colors with `--bg` / `--fg` in `assets/css/base.css`. Their RGB
+counterparts, `--bg-rgb` / `--fg-rgb`, are used by the canvas renderer and must
+stay in sync.
 
-## ライセンス
+## License
 
 MIT
