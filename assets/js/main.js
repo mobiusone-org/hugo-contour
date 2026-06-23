@@ -19,6 +19,7 @@
     return scope.querySelector('[data-contour-coords]');
   }
 
+  const instances = [];
   canvases.forEach(canvas => {
     const opts = {};
     if (canvas.dataset.color) opts.color = canvas.dataset.color;
@@ -31,6 +32,9 @@
       };
     }
 
-    Contour.create(canvas, opts);
+    instances.push(Contour.create(canvas, opts));
   });
+
+  // テーマ切り替え時、線色（CSS 変数由来）を読み直して全フレームを再描画する。
+  window.addEventListener('themechange', () => instances.forEach(c => c.render()));
 })();

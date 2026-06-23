@@ -11,6 +11,7 @@
 {{ block "main" . }}{{ end }}
 {{ else }}
 {{ partial "sidebar.html" . }}
+{{ partial "theme-toggle.html" . }}
 {{ block "main" . }}{{ end }}
 {{ partial "copyright.html" . }}
 {{ end }}

@@ -58,11 +58,13 @@ body { min-height: 100vh; }
   padding: clamp(48px, 10vh, 120px) clamp(48px, 5vw, 72px);
 }
 
-/* コピーライト: デスクトップでは右下に固定し、共通の縦書きを維持する */
+/* コピーライト: デスクトップでは右下に固定し、共通の縦書きを維持する。
+   中心軸を右上の切り替えボタンの中心（右端から --frame-pad + 半幅）に合わせ、縦に揃える。 */
 .copyright {
   position: fixed;
-  right: var(--pad);
+  right: calc(var(--frame-pad) + var(--toggle-size) / 2);
   bottom: var(--pad);
+  transform: translateX(50%);
   color: var(--fg);
 }
 
@@ -257,25 +259,32 @@ body { min-height: 100vh; }
    タイトル・メニューともにヘッダー内で上下中央揃えにし、
    非常に小さなデバイスからタブレット程度まで一貫したスタイルを提供する。 */
 @media (max-width: 960px), (max-aspect-ratio: 1/1) {
+  /* 外側の + 枠を加えても枠内寸法が従来（232px）のまま保たれるバンド高。
+     .sidebar の高さと切り替えボタンの退避位置で共用する。 */
+  :root { --band-h: 304px; }
   .sidebar {
     position: relative;
     width: 100%;
-    /* 外側の + 枠を加えても枠内寸法が従来（232px）のまま保たれる高さ */
-    height: 304px;
+    height: var(--band-h);
     container-type: size;
   }
   .content { margin-left: 0; }
+  /* 画面（ビューポート）固定だと記事スクロール時に本文へ重なるため、ページ（ドキュメント）に
+     対する絶対配置にし、記事と一緒にスクロールさせる。位置は上部バンド直下＝記事先頭の右上。 */
+  .theme-toggle {
+    position: absolute;
+    top: calc(var(--band-h) + var(--pad));
+  }
   .post { padding-left: 24px; padding-right: 24px; }
+  /* レイアウト（静的配置・右寄せ）だけ変え、書体はトップページと同じ共通スタイル
+     （16px・letter-spacing 0.2em）を継承して見た目を揃える。 */
   .copyright {
     display: block;
     position: static;
     width: max-content;
     margin: 0 24px 24px auto;
     padding: 0;
-    writing-mode: vertical-rl;
-    font-size: 11px;
-    line-height: 1.4;
-    letter-spacing: 0.12em;
+    transform: none; /* バンドレイアウトでは静的配置に戻すため中央寄せのずらしを解除 */
   }
 
   /* + マークの外側余白は var(--frame-pad) のまま。バンドでも同じ値を共有する。 */

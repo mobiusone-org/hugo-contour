@@ -1,4 +1,4 @@
-{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") | resources.Concat "js/contour.bundle.js" -}}
+{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") (resources.Get "js/theme.js") | resources.Concat "js/contour.bundle.js" -}}
 {{- if hugo.IsProduction }}{{ $js = $js | minify | fingerprint }}{{ end -}}
 <script src="{{ $js.RelPermalink }}"{{ with $js.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{- /* 検索ページだけクライアント検索スクリプトを足す。 */ -}}

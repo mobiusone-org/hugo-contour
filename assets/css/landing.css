@@ -16,6 +16,10 @@ html, body {
   bottom: var(--pad);
 }
 
+/* 右ペイン右上の + マークは切り替えボタンが占めるため非表示にする
+   （ボタンの右上角がこのマークの中心位置に重なる）。 */
+.home-field .mark.tr { display: none; }
+
 .home-field {
   --frame-left: calc(var(--sidebar-w) + var(--frame-pad));
   --coords-left: calc(var(--sidebar-w) + (100vw - var(--sidebar-w)) / 2);

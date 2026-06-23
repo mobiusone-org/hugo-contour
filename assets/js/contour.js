@@ -35,7 +35,9 @@
       interactive: true, // クリックで地形を再生成する
       onRegenerate: null, // ({ lat, lon }) => void
     }, options);
-    if (opts.color.startsWith('--')) opts.color = cssRGB(opts.color);
+    // 線色が CSS カスタムプロパティ名なら、その名前を保持して render() ごとに読み直す。
+    // これでテーマ切り替え（--*-rgb の入れ替え）に追従して再描画できる（初回解決も render が行う）。
+    const colorVar = opts.color.startsWith('--') ? opts.color : null;
 
     const ctx = canvas.getContext('2d');
 
@@ -161,6 +163,8 @@
     }
 
     function render() {
+      // テーマに追従するため、CSS 変数由来の線色は描画ごとに最新値へ更新する。
+      if (colorVar) opts.color = cssRGB(colorVar);
       sampleField();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);

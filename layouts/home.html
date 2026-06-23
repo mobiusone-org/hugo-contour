@@ -7,6 +7,9 @@
 
 {{ partial "field-frame.html" (dict "class" "home-field" "frame" "home") }}
 
+{{- /* 切り替えボタンは右ペイン（等高線エリア）の右上。コンテンツページと同じ位置に揃える。 */ -}}
+{{ partial "theme-toggle.html" . }}
+
 <div class="home-menu-frame">
   <main class="menu">
     {{ partial "menu.html" . }}
