@@ -12,6 +12,33 @@
   color: var(--bg);
 }
 
+/* ---- ライト/ダーク切り替えボタン ----
+   全ページ共通で右ペイン（背景色エリア）の右上に固定し、ページ間で位置が動かないようにする。
+   その右上角を + マークの中心（top / right とも --frame-pad）に合わせて、フレームの語彙に馴染ませる。
+   正方形・1px ボーダーの最小限の佇まいで、配色は currentColor 追従。
+   ホバーで前景/背景を反転（サイト共通のインタラクションに倣う）。 */
+.theme-toggle {
+  position: fixed;
+  top: var(--frame-pad);
+  right: var(--frame-pad);
+  width: var(--toggle-size);
+  height: var(--toggle-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid currentColor;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  z-index: 30;
+  transition: background .2s, color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.theme-toggle:hover { background: var(--fg); color: var(--bg); }
+.theme-toggle:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+.theme-toggle-icon { display: block; width: 16px; height: 16px; }
+
 /* ---- 等高線 canvas ---- */
 .contour-canvas {
   inset: 0;
