@@ -1,0 +1,11 @@
+{{- /* CSS バンドルを生成して返す。引数はバリアント名（"home" / "page"）。
+       必ず partialCached で呼ぶこと。多数のページが同じ出力パスへ
+       Concat/minify/fingerprint を並行実行すると、まれに未処理パスの
+       リンク（404）が出力されるレースがあるため、バリアントごとに
+       一度だけ実行する。 */ -}}
+{{- $variant := . -}}
+{{- $css := slice (resources.Get "css/base.css") (resources.Get "css/components.css") -}}
+{{- $css = $css | append (cond (eq $variant "home") (resources.Get "css/landing.css") (resources.Get "css/post.css")) -}}
+{{- $bundle := $css | resources.Concat (printf "css/contour-%s.css" $variant) -}}
+{{- if hugo.IsProduction }}{{ $bundle = $bundle | minify | fingerprint }}{{ end -}}
+{{- return $bundle -}}
