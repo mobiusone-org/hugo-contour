@@ -45,17 +45,6 @@ body { min-height: 100vh; }
   background: var(--bg);
   color: var(--fg);
 }
-/* 言語スイッチャー: サイドバーでは右合わせ・反転色（メニューと同じ扱い） */
-.sidebar .lang-switch {
-  justify-content: flex-end;
-  padding: 8px 12px 0;
-}
-.sidebar .lang-switch a { color: var(--bg); }
-.sidebar .lang-switch a:hover {
-  background: var(--bg);
-  color: var(--fg);
-}
-
 /* ---- コンテンツペイン ---- */
 .content {
   margin-left: var(--sidebar-w);
@@ -88,6 +77,21 @@ body { min-height: 100vh; }
   letter-spacing: 0.24em;
   text-transform: uppercase;
   opacity: 0.8;
+}
+
+/* 言語スイッチャー: ページに属する要素なので post-meta 行の右端に置き、
+   他のメタ情報（日付・読了時間）と同じ字面に揃える。 */
+.post-meta .lang-switch {
+  margin-left: auto;
+  padding: 0;
+}
+.post-meta .lang-switch a {
+  font-size: inherit;
+  letter-spacing: inherit;
+  font-weight: inherit;
+  /* 行全体が opacity 0.8 なので、リンク側の減光は重ねない */
+  opacity: 1;
+  padding: 2px 6px;
 }
 
 .post-title {
