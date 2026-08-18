@@ -146,6 +146,35 @@ body { min-height: 100vh; }
   padding: 0;
 }
 
+/* ---- コードコピーボタン（copy.js が挿入する） ----
+   ブロックの右上角に重ね、メニューと同じ xx/ 形式のラベルで表示する。
+   ホバーで前景/背景を反転（サイト共通のインタラクションに倣う）。 */
+.post-body .highlight,
+.post-body pre {
+  position: relative;
+}
+.code-copy {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 10px;
+  border: none;
+  border-left: 1px solid rgba(var(--fg-rgb), 0.35);
+  border-bottom: 1px solid rgba(var(--fg-rgb), 0.35);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.code-copy:hover { background: var(--fg); color: var(--bg); }
+.code-copy:focus-visible { outline: 1px solid currentColor; outline-offset: -4px; }
+
 .post-body blockquote {
   margin: 0 0 1.7em;
   padding-left: 22px;

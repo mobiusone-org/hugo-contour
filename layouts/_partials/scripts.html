@@ -1,4 +1,7 @@
-{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") (resources.Get "js/theme.js") | resources.Concat "js/contour.bundle.js" -}}
+{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") (resources.Get "js/theme.js") -}}
+{{- /* コードコピーボタンは showCodeCopy = false で外せる（既定は有効）。 */ -}}
+{{- if ne site.Params.showCodeCopy false }}{{ $js = $js | append (resources.Get "js/copy.js") }}{{ end -}}
+{{- $js = $js | resources.Concat "js/contour.bundle.js" -}}
 {{- if hugo.IsProduction }}{{ $js = $js | minify | fingerprint }}{{ end -}}
 <script src="{{ $js.RelPermalink }}"{{ with $js.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{- /* 検索ページだけクライアント検索スクリプトを足す。 */ -}}
