@@ -45,6 +45,16 @@ body { min-height: 100vh; }
   background: var(--bg);
   color: var(--fg);
 }
+/* 言語スイッチャー: サイドバーでは右合わせ・反転色（メニューと同じ扱い） */
+.sidebar .lang-switch {
+  justify-content: flex-end;
+  padding: 8px 12px 0;
+}
+.sidebar .lang-switch a { color: var(--bg); }
+.sidebar .lang-switch a:hover {
+  background: var(--bg);
+  color: var(--fg);
+}
 
 /* ---- コンテンツペイン ---- */
 .content {
