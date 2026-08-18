@@ -1,0 +1,13 @@
+{{- /* JS バンドルを生成して返す。引数は "main"（共通バンドル）か "search"。
+       css-bundle.html と同じ理由で、必ず partialCached で呼ぶこと。 */ -}}
+{{- $bundle := "" -}}
+{{- if eq . "search" -}}
+{{- $bundle = resources.Get "js/search.js" -}}
+{{- else -}}
+{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") (resources.Get "js/theme.js") -}}
+{{- /* コードコピーボタンは showCodeCopy = false で外せる（既定は有効）。 */ -}}
+{{- if ne site.Params.showCodeCopy false }}{{ $js = $js | append (resources.Get "js/copy.js") }}{{ end -}}
+{{- $bundle = $js | resources.Concat "js/contour.bundle.js" -}}
+{{- end -}}
+{{- if hugo.IsProduction }}{{ $bundle = $bundle | minify | fingerprint }}{{ end -}}
+{{- return $bundle -}}

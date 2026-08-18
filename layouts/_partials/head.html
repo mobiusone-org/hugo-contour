@@ -28,12 +28,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,600&display=swap" rel="stylesheet">
 {{- /* base + components は全ページ共通。ホームは landing、それ以外は post を足す。
-       出力パスはバリアントごとに分ける（開発ビルドは fingerprint されず、同名だと衝突するため）。 */ -}}
+       出力パスはバリアントごとに分ける（開発ビルドは fingerprint されず、同名だと衝突するため）。
+       生成は css-bundle.html に委譲し、partialCached でバリアントごとに一度だけ実行する。 */ -}}
 {{- $variant := cond .IsHome "home" "page" -}}
-{{- $css := slice (resources.Get "css/base.css") (resources.Get "css/components.css") -}}
-{{- $css = $css | append (cond .IsHome (resources.Get "css/landing.css") (resources.Get "css/post.css")) -}}
-{{- $bundle := $css | resources.Concat (printf "css/contour-%s.css" $variant) -}}
-{{- if hugo.IsProduction }}{{ $bundle = $bundle | minify | fingerprint }}{{ end -}}
+{{- $bundle := partialCached "css-bundle.html" $variant $variant -}}
 <link rel="stylesheet" href="{{ $bundle.RelPermalink }}"{{ with $bundle.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}>
 {{- /* fg / bg が params にあれば base.css の素の二色（--fg-src / --bg-src）を上書きする。
        data-theme によるライト/ダークのスワップはこの二色を入れ替えて成立する。
