@@ -107,6 +107,13 @@ body { min-height: 100vh; }
 }
 .post-body p { margin-bottom: 1.7em; }
 
+/* 画像は本文カラム幅に収める（レスポンシブイメージの標準形）。
+   width/height 属性や固有サイズがカラムより大きくても縦横比を保って縮む。 */
+.post-body img {
+  max-width: 100%;
+  height: auto;
+}
+
 .post-body h2 {
   display: flex;
   align-items: baseline;
