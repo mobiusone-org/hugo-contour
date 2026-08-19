@@ -4,6 +4,13 @@
 
 body { min-height: 100vh; }
 
+:root {
+  /* 記事カラムの寸法。バンドレイアウトで操作群（site-controls）を
+     post-meta の kicker 行に揃えるため、.post と共有する。 */
+  --post-max-w: 760px;
+  --post-pad-v: clamp(48px, 10vh, 120px);
+}
+
 .sidebar-terrain {
   position: absolute;
 }
@@ -51,10 +58,10 @@ body { min-height: 100vh; }
 }
 
 .post {
-  max-width: 760px;
+  max-width: var(--post-max-w);
   margin: 0 auto;
   /* 左右 48px 以上: 固定配置のコピーライトや viewport 端と本文が詰まりすぎないようにする */
-  padding: clamp(48px, 10vh, 120px) clamp(48px, 5vw, 72px);
+  padding: var(--post-pad-v) clamp(48px, 5vw, 72px);
 }
 
 /* コピーライト: デスクトップでは右下に固定し、共通の縦書きを維持する。
@@ -304,13 +311,39 @@ body { min-height: 100vh; }
     container-type: size;
   }
   .content { margin-left: 0; }
-  /* 画面（ビューポート）固定だと記事スクロール時に本文へ重なるため、ページ（ドキュメント）に
-     対する絶対配置にし、記事と一緒にスクロールさせる。位置は上部バンド直下＝記事先頭の右上。 */
+  /* 操作群は post-meta の kicker 行に統合する:
+     「POSTS/ …（空白）… EN/ ◐」を 1 行に、日付・読了時間は次の行へ。
+     画面（ビューポート）固定だと記事スクロール時に本文へ重なるため、ページ（ドキュメント）に
+     対する絶対配置にし、記事と一緒にスクロールさせる。縦位置は .post の上パディングと
+     同じ式で kicker 行に揃え、横位置は記事カラムの右端に揃える。
+     row-reverse により DOM 順は変えずトグルが最右＝角のアンカーに残る。 */
   .site-controls {
     position: absolute;
-    top: calc(var(--band-h) + var(--pad));
+    top: calc(var(--band-h) + var(--post-pad-v));
+    right: max(24px, (100% - var(--post-max-w)) / 2 + 24px);
+    flex-direction: row-reverse;
   }
+  .lang-switch { flex-direction: row-reverse; }
   .post { padding-left: 24px; padding-right: 24px; }
+  /* post-meta は 2 行のグリッドにする: 1 行目 = kicker（右側は操作群のオーバーレイ）、
+     2 行目 = 日付・読了時間など。kicker は操作群のチップと同じ高さ（--toggle-size）に
+     揃え、行内の四角の高さを一致させる。 */
+  .post-meta {
+    display: grid;
+    grid-template-columns: max-content max-content 1fr;
+    gap: 14px 18px;
+  }
+  .post-meta .kicker {
+    grid-column: 1 / -1;
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    height: var(--toggle-size);
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  /* 検索ページの件数など、中身が空のメタ項目は行ごと消す（空行の row-gap を避ける） */
+  .post-meta span:empty { display: none; }
   /* レイアウト（静的配置・右寄せ）だけ変え、書体はトップページと同じ共通スタイル
      （16px・letter-spacing 0.2em）を継承して見た目を揃える。 */
   .copyright {
