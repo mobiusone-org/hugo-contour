@@ -12,15 +12,24 @@
   color: var(--bg);
 }
 
-/* ---- ライト/ダーク切り替えボタン ----
+/* ---- 右上のサイト操作群（テーマ切り替え + 言語スイッチャー） ----
    全ページ共通で右ペイン（背景色エリア）の右上に固定し、ページ間で位置が動かないようにする。
    その右上角を + マークの中心（top / right とも --frame-pad）に合わせて、フレームの語彙に馴染ませる。
-   正方形・1px ボーダーの最小限の佇まいで、配色は currentColor 追従。
-   ホバーで前景/背景を反転（サイト共通のインタラクションに倣う）。 */
-.theme-toggle {
+   トグルを先頭に、言語リンクを同サイズの正方形チップとして真下へ積む。 */
+.site-controls {
   position: fixed;
   top: var(--frame-pad);
   right: var(--frame-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 30;
+}
+
+/* ---- ライト/ダーク切り替えボタン ----
+   正方形・1px ボーダーの最小限の佇まいで、配色は currentColor 追従。
+   ホバーで前景/背景を反転（サイト共通のインタラクションに倣う）。 */
+.theme-toggle {
   width: var(--toggle-size);
   height: var(--toggle-size);
   display: inline-flex;
@@ -31,7 +40,6 @@
   background: var(--bg);
   color: var(--fg);
   cursor: pointer;
-  z-index: 30;
   transition: background .2s, color .2s;
   -webkit-tap-highlight-color: transparent;
 }
@@ -160,28 +168,36 @@
 .menu-list a:hover i { opacity: 1; }
 
 /* ---- 言語スイッチャー（翻訳があるページのみ lang-switch.html が出力） ----
-   メニュー項目の番号 <i> と同じ小さな字面で、メニューの末尾に添える。 */
+   テーマ切り替えボタンと同じ正方形・1px ボーダーのチップとして、その真下に積む。
+   字面は計測ラベル（axis/coords）と同じ 11px・uppercase で、フレームの語彙に揃える。 */
 .lang-switch {
   display: flex;
-  gap: 8px;
-  padding: 10px 14px 0;
+  flex-direction: column;
+  gap: 10px;
 }
 .lang-switch a {
+  width: var(--toggle-size);
+  height: var(--toggle-size);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid currentColor;
+  background: var(--bg);
   color: var(--fg);
   text-decoration: none;
   text-transform: uppercase;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 300;
-  letter-spacing: 0.2em;
-  padding: 4px 8px;
-  opacity: 0.6;
-  transition: background .2s, color .2s, opacity .2s;
+  letter-spacing: 0.12em;
+  /* letter-spacing は末尾にも付くため、その分を左に足して視覚的にセンタリングする */
+  padding-left: 0.12em;
+  transition: background .2s, color .2s;
 }
 .lang-switch a:hover {
   background: var(--fg);
   color: var(--bg);
-  opacity: 1;
 }
+.lang-switch a:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
 
 /* ---- 共通インタラクション: ホバーで前景/背景を反転（サイト全体で使う） ---- */
 .menu-list a,

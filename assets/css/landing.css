@@ -41,6 +41,9 @@ html, body {
 @media (max-width: 720px) {
   .site-title { font-size: min(11vw, 9vh); }
   .home-field .axis, .home-field .coords { display: none; }
+  /* 狭幅では操作群を右上の角から左へ横並びにする（縦積みだと右端だけ縦に重くなる）。
+     row-reverse により DOM 順は変えずトグルが最右＝角のアンカーに残る。 */
+  .site-controls, .lang-switch { flex-direction: row-reverse; }
   .home-menu-frame {
     padding-right: var(--frame-pad);
     padding-left: calc(var(--sidebar-w) + var(--frame-pad));
