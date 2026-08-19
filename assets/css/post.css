@@ -79,21 +79,6 @@ body { min-height: 100vh; }
   opacity: 0.8;
 }
 
-/* 言語スイッチャー: ページに属する要素なので post-meta 行の右端に置き、
-   他のメタ情報（日付・読了時間）と同じ字面に揃える。 */
-.post-meta .lang-switch {
-  margin-left: auto;
-  padding: 0;
-}
-.post-meta .lang-switch a {
-  font-size: inherit;
-  letter-spacing: inherit;
-  font-weight: inherit;
-  /* 行全体が opacity 0.8 なので、リンク側の減光は重ねない */
-  opacity: 1;
-  padding: 2px 6px;
-}
-
 .post-title {
   margin-top: clamp(24px, 4vh, 40px);
   font-size: clamp(30px, 4.2vw, 52px);
@@ -321,7 +306,7 @@ body { min-height: 100vh; }
   .content { margin-left: 0; }
   /* 画面（ビューポート）固定だと記事スクロール時に本文へ重なるため、ページ（ドキュメント）に
      対する絶対配置にし、記事と一緒にスクロールさせる。位置は上部バンド直下＝記事先頭の右上。 */
-  .theme-toggle {
+  .site-controls {
     position: absolute;
     top: calc(var(--band-h) + var(--pad));
   }
