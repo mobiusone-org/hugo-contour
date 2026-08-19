@@ -1,0 +1,21 @@
+{{- /* 404 ページ。S3 / CloudFront 等の静的ホスティングはエラードキュメントとして
+       /404.html を配信するのが通例なので、テーマとして必ず生成しておく。
+       見た目はコンテンツページと同じ外殻（baseof）に、地図の語彙で「圏外」を伝える。 */ -}}
+{{ define "main" }}
+<main class="content">
+  <div class="post">
+    <header>
+      <div class="post-meta">
+        <span class="kicker">404/</span>
+        <span>Not found</span>
+      </div>
+      <h1 class="post-title">Off the map</h1>
+    </header>
+
+    <div class="post-body">
+      <p>The requested path is outside the charted area.</p>
+      <p><a href="{{ site.Home.RelPermalink }}">← Back to the map</a></p>
+    </div>
+  </div>
+</main>
+{{ end }}
