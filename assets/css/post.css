@@ -298,22 +298,16 @@ body { min-height: 100vh; }
 
 /* ---- 404（未踏区画） ----
    地図データが届かないまま、それ以外は正常に動いているコンソールの演出。
-   サイドバーは canvas を描かず（sidebar.html）、読み込み前のプレースホルダーを
-   思わせる薄い + グリッドだけを敷く。計測ラベル（axis / coords）は通常ページの
-   位置・書式のまま、接続エラーの表示に転用される。
+   サイドバーは等高線の代わりに、読み込み前プレースホルダーの + ラティスを
+   通常ページと同じ canvas に描く（sidebar.html / contour.js の lattice モード。
+   端点がフレームの + マーク（--frame-pad）と一致するので座標系がつながる）。
+   計測ラベル（axis / coords）は通常ページの位置・書式のまま、接続エラーの
+   表示に転用される。
    右ペインは通常の記事ビュー構成で 404 を報告し、右下の殴り書きだけが異質に残る。 */
 
-/* グリッドは ::before で敷き、ロゴ・メニュー（後続の絶対配置要素）の下に描く。
-   色は CSS 変数に追従させるため、SVG の + タイルをマスクにして背景色で塗る。 */
-.layout-404 .sidebar::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(var(--bg-rgb), 0.3);
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 16v12M16 22h12' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E");
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cpath d='M22 16v12M16 22h12' stroke='%23fff' stroke-width='1'/%3E%3C/svg%3E");
+/* ラティス自体は canvas が描くので、ここでは読み込み待ちの明滅だけ与える。 */
+.layout-404 .sidebar-terrain {
   animation: grid-breathe 6s ease-in-out infinite;
-  pointer-events: none;
 }
 
 /* coords 転用時の点滅カーソル（sidebar.html が coords の差し替え文字列に埋め込む）。
@@ -321,8 +315,10 @@ body { min-height: 100vh; }
    直前の文字との間隔は親の letter-spacing がそのまま効く。 */
 .lost-cursor {
   display: inline-block;
-  width: 0.55em;
-  height: 1em;
+  /* 物理 width / height だと縦書き（バンドの coords ラベル）でカーソルの向きが
+     90° ずれるため、書字方向に追従する論理プロパティで描く。 */
+  inline-size: 0.55em;
+  block-size: 1em;
   background: currentColor;
   vertical-align: text-bottom;
   animation: cursor-blink 1.1s steps(1, end) infinite;
@@ -367,7 +363,7 @@ body { min-height: 100vh; }
   50% { opacity: 0; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .lost-scrawl, .lost-cursor, .layout-404 .sidebar::before { animation: none; }
+  .lost-scrawl, .lost-cursor, .layout-404 .sidebar-terrain { animation: none; }
 }
 
 /* ---- 狭い・縦長のビューポート: サイドバーを上部バンドに ----
@@ -434,7 +430,9 @@ body { min-height: 100vh; }
   /* サイト名 + kicker: 縦書きにして左側上下中央へ */
   .sidebar .logo-group {
     position: absolute;
-    left: calc(var(--frame-pad) + 6px); /* 左の + マークの内側に、ディセンダ込みで収まる位置 */
+    /* 四隅の + マーク（中心 --frame-pad、腕 ±8px）に文字がめり込まないよう、
+       腕の外端からさらに 8px 離す。 */
+    left: calc(var(--frame-pad) + 16px);
     top: 50%;
     transform: translateY(-50%);
     flex-direction: row;
@@ -455,8 +453,11 @@ body { min-height: 100vh; }
     white-space: nowrap;
     max-height: none;
     font-size: clamp(8px, 2.65cqh, 10px);
-    letter-spacing: 0.08em;
-    padding: 2cqh 3px;
+    /* 縦の全長を +枠の内寸（100cqh - frame-pad×2）以下に収める。
+       はみ出すとロゴ群の上下中央寄せが枠外へ押し出されるため、
+       字間と上下パディングをデスクトップよりわずかに詰める。 */
+    letter-spacing: 0.06em;
+    padding: min(2cqh, 4px) 3px;
     line-height: 1.3;
   }
 
@@ -519,11 +520,19 @@ body { min-height: 100vh; }
   }
   .sidebar .menu-list a + a { margin-top: -1px; }
 
-  /* 404 の殴り書きは band でも右下。min-height で確保した本文下の余白に沈め、
-     記事本文（戻るリンク）への食い込みを浅くする。 */
+  /* 404 の殴り書き: 書体・傾き（-30°）・右端からのはみ出しはデスクトップと共用し、
+     band 固有の差分は「位置」と「行数」だけにする。
+     - absolute: コピーライトと同様にページへ追従させる（fixed だとスクロールで
+       残存して最下部のコピーライトに重なる）。基準は初期包含ブロック。
+     - 2 行折り（.scrawl-l2）: 幅が足りないぶんは行を折って収める。 */
+  /* 右へのはみ出しが横スクロールを作らないように。absolute の殴り書きの
+     包含ブロックは初期包含ブロックなので、クリップは html に置く必要がある。 */
+  html:has(body.layout-404) { overflow-x: clip; }
   .lost-scrawl {
-    bottom: 4px;
+    position: absolute;
+    bottom: 64px;
   }
+  .lost-scrawl .scrawl-l2 { display: block; }
   /* 404 は本文が短く、静的配置のコピーライトがバンド直下まで浮き上がってしまう。
      コンテンツ領域に残りビューポートぶんの高さを与え、通常ページと同じ最下部に保つ。 */
   .layout-404 .content {

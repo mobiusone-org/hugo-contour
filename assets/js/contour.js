@@ -30,6 +30,7 @@
     const opts = Object.assign({
       color: '--fg-rgb', // 線色: CSS カスタムプロパティ名 or "r, g, b"
       cell: 12,          // grid cell size (css px)
+      lattice: 0,        // >0 なら等高線の代わりに + ラティスを描く（目標間隔 css px）
       scale: 0.0021,     // noise frequency
       levels: 54,        // number of iso lines
       interactive: true, // クリックで地形を再生成する
@@ -162,12 +163,38 @@
       return sorted[Math.min(sorted.length - 1, (sorted.length * waterFrac) | 0)];
     }
 
+    /* 読み込み前プレースホルダー: 等高線の代わりに + ラティスを描く（404 など）。
+       格子はフレームの + マーク中心（--frame-pad）を通るよう等分割するが、
+       描くのは枠の内側のノードのみ。枠線上は .mark（四隅）と axis / coords
+       ラベルの領分なので、重ね描きや文字との衝突を避ける。
+       + の寸法は .mark と同じ 16px・1px 線。 */
+    function renderLattice() {
+      const pad = parseFloat(getComputedStyle(canvas).getPropertyValue('--frame-pad')) || 36;
+      const arm = 8;
+      const innerW = width - pad * 2, innerH = height - pad * 2;
+      const nx = Math.max(1, Math.round(innerW / opts.lattice));
+      const ny = Math.max(1, Math.round(innerH / opts.lattice));
+      ctx.strokeStyle = `rgba(${opts.color}, 0.3)`;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      for (let j = 1; j < ny; j++) {
+        const y = pad + innerH * j / ny;
+        for (let i = 1; i < nx; i++) {
+          const x = pad + innerW * i / nx;
+          ctx.moveTo(x - arm, y); ctx.lineTo(x + arm, y);
+          ctx.moveTo(x, y - arm); ctx.lineTo(x, y + arm);
+        }
+      }
+      ctx.stroke();
+    }
+
     function render() {
       // テーマに追従するため、CSS 変数由来の線色は描画ごとに最新値へ更新する。
       if (colorVar) opts.color = cssRGB(colorVar);
-      sampleField();
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, width, height);
+      if (opts.lattice) { renderLattice(); return; }
+      sampleField();
       ctx.lineJoin = 'round';
       ctx.lineCap = 'round';
 
@@ -210,7 +237,7 @@
       render();
     }
 
-    if (opts.interactive) canvas.addEventListener('click', regenerate);
+    if (opts.interactive && !opts.lattice) canvas.addEventListener('click', regenerate);
     global.addEventListener('resize', () => { resize(); render(); });
 
     reseed();

@@ -12,17 +12,17 @@
     <header>
       <div class="post-meta">
         <span class="kicker">404/</span>
-        <span>Map data not found</span>
+        <span>No data</span>
       </div>
       <h1 class="post-title">Not found</h1>
     </header>
     <div class="post-body">
-      <p>The requested path is outside the charted area. No isoline data has been received for this location.</p>
+      <p>There is no data for the requested path.<br>Nothing has been received for this location.</p>
       <p><a href="{{ site.Home.RelPermalink }}">← Back to the charted area</a></p>
     </div>
   </article>
   {{- /* 書き残し。誰もいないはずの未踏区域から ping に応答が返ってきた —
          未知の知性との遭遇を、このコンソールの語彙（通信）で。 */ -}}
-  <p class="lost-scrawl" aria-hidden="true">it answered our ping</p>
+  <p class="lost-scrawl" aria-hidden="true">it answered <span class="scrawl-l2">our ping</span></p>
 </main>
 {{ end }}
