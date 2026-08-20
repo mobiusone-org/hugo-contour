@@ -1,21 +1,28 @@
 {{- /* 404 ページ。S3 / CloudFront 等の静的ホスティングはエラードキュメントとして
        /404.html を配信するのが通例なので、テーマとして必ず生成しておく。
-       見た目はコンテンツページと同じ外殻（baseof）に、地図の語彙で「圏外」を伝える。 */ -}}
+       演出は「地図データが届かないまま、それ以外は正常に動いているコンソール」:
+       サイドバーは読み込み前のプレースホルダーグリッドになり、計測ラベルが
+       接続エラーを流す（sidebar.html）。右ペインはシステムが通常の記事ビューの
+       構成で 404 を報告し、その右下に殴り書きだけが明らかに異質な存在として残る。 */ -}}
 {{ define "main" }}
+{{- /* 殴り書き用フォントはこのページでしか使わないため、head ではなくここで読み込む。 */ -}}
+<link href="https://fonts.googleapis.com/css2?family=Rock+Salt&display=swap" rel="stylesheet">
 <main class="content">
-  <div class="post">
+  <article class="post">
     <header>
       <div class="post-meta">
         <span class="kicker">404/</span>
-        <span>Not found</span>
+        <span>Map data not found</span>
       </div>
-      <h1 class="post-title">Off the map</h1>
+      <h1 class="post-title">Not found</h1>
     </header>
-
     <div class="post-body">
-      <p>The requested path is outside the charted area.</p>
-      <p><a href="{{ site.Home.RelPermalink }}">← Back to the map</a></p>
+      <p>The requested path is outside the charted area. No isoline data has been received for this location.</p>
+      <p><a href="{{ site.Home.RelPermalink }}">← Back to the charted area</a></p>
     </div>
-  </div>
+  </article>
+  {{- /* 書き残し。誰もいないはずの未踏区域から ping に応答が返ってきた —
+         未知の知性との遭遇を、このコンソールの語彙（通信）で。 */ -}}
+  <p class="lost-scrawl" aria-hidden="true">it answered our ping</p>
 </main>
 {{ end }}
