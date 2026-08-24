@@ -17,7 +17,7 @@
          1 つの span に包んで単一の flex アイテムにする（gap の混入を防ぐ）。 */}}
   {{ $frame = merge $frame (dict
        "axis" "Elevation / Out of Range"
-       "coords" `<span>Position unknown<i class="lost-cursor"></i></span>`) }}
+       "coords" `<span>No data received<i class="lost-cursor"></i></span>`) }}
   {{ end }}
   {{ partial "field-frame.html" $frame }}
   {{ partial "logo.html" (dict "heading" false) }}

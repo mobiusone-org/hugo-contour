@@ -325,18 +325,19 @@ body { min-height: 100vh; }
 }
 
 /* 殴り書き。記事ビューが正常に描画される中で、これだけが異質な存在として
-   右下に残る。装飾なので操作は素通しにする。 */
+   画面の右下に残る。右端に固定のコピーライト（縦書き）とは列を分けて距離をとる。
+   装飾なので操作は素通しにする。 */
 .lost-scrawl {
   position: fixed;
-  /* 画面右端から堂々とはみ出させる（fixed はスクロール領域に寄与しないので
-     スクロールバーは出ない）。はみ出し量はフォントサイズに追従させる。 */
-  right: -0.4em;
-  bottom: clamp(96px, 30vh, 340px);
+  /* 回転で右上が箱から約 1.5em はみ出すので、その分を含めてコピーライトの列
+     （右端から --frame-pad + 十数 px）から十分に離す。 */
+  right: clamp(96px, 7.5vw, 140px);
+  bottom: clamp(64px, 12vh, 140px);
   z-index: 5;
   pointer-events: none;
   white-space: nowrap;
   font-family: "Rock Salt", cursive;
-  font-size: clamp(40px, 6.5vw, 110px);
+  font-size: clamp(24px, 3.25vw, 55px);
   font-weight: 400;
   line-height: 1.6;
   transform: rotate(-30deg);
@@ -344,6 +345,8 @@ body { min-height: 100vh; }
   text-shadow: 0.06em 0.04em 0 rgba(var(--fg-rgb), 0.22);
   animation: scrawl-in 2.4s steps(1, end) both;
 }
+/* 2 行折り。横に長く流さず、塊として置く。 */
+.lost-scrawl .scrawl-l2 { display: block; }
 
 /* 唐突さ: フェードではなく steps で点滅させ、走り書きが「現れてしまった」ように見せる */
 @keyframes scrawl-in {
@@ -520,22 +523,24 @@ body { min-height: 100vh; }
   }
   .sidebar .menu-list a + a { margin-top: -1px; }
 
-  /* 404 の殴り書き: 書体・傾き（-30°）・右端からのはみ出しはデスクトップと共用し、
-     band 固有の差分は「位置」と「行数」だけにする。
-     - absolute: コピーライトと同様にページへ追従させる（fixed だとスクロールで
-       残存して最下部のコピーライトに重なる）。基準は初期包含ブロック。
-     - 2 行折り（.scrawl-l2）: 幅が足りないぶんは行を折って収める。 */
-  /* 右へのはみ出しが横スクロールを作らないように。absolute の殴り書きの
-     包含ブロックは初期包含ブロックなので、クリップは html に置く必要がある。 */
-  html:has(body.layout-404) { overflow-x: clip; }
+  /* 404 の殴り書き: 書体・傾き・2 行折りはデスクトップと共用し、デスクトップと同じく
+     コピーライトの左隣に置く。band ではコピーライトが静的配置（.content の直後、右寄せ
+     の縦書き）なので、.content を基準にその直下＝コピーライトの高さ範囲に absolute で
+     並べる。fixed にしないのは、スクロールで残存して本文に重なるのを避けるため。
+     サイズは幅に追従させ、狭い端末でも左端からはみ出さないようにする
+     （bbox 幅 ≒ 7.8em。right + 7.8em が幅を超えない範囲）。 */
+  .layout-404 .content { position: relative; }
   .lost-scrawl {
     position: absolute;
-    bottom: 64px;
+    top: calc(100% + 8px);
+    bottom: auto; /* 大画面用の bottom と併存すると高さが潰れる */
+    right: 72px;
+    font-size: clamp(26px, 9.4vw, 40px);
   }
-  .lost-scrawl .scrawl-l2 { display: block; }
   /* 404 は本文が短く、静的配置のコピーライトがバンド直下まで浮き上がってしまう。
      コンテンツ領域に残りビューポートぶんの高さを与え、通常ページと同じ最下部に保つ。 */
   .layout-404 .content {
     min-height: calc(100vh - var(--band-h) - 96px);
   }
+}
 }
