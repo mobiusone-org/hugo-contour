@@ -111,16 +111,16 @@ body { min-height: 100vh; }
 }
 
 /* ---- 図版（plate）----
-   Markdown 画像は render-image フックで .plate に包まれ、等高線の表示領域と同じ
-   + マーク（.mark）を四隅に打つ。マークは画像の角を中心に置き、外側へはみ出す
-   腕と内側の腕が細い罫線と交差して、地図の図郭のように読める。 */
+   Markdown 画像は render-image フックで .plate に包まれ、四隅に L 字の角マークを打つ。
+   角マークは等高線フレームの + マーク（.mark: 16px / 1px / currentColor）と同じ
+   部材で、+ のうち画像側を向く 2 本の腕だけを残した形。罫線は引かない。 */
 .plate {
   display: block;
   margin: 2.6em 0;
   text-align: center;
 }
 .plate-frame {
-  --plate-inset: 14px;  /* 図郭（+ マークと罫線）から画像までの余白 */
+  --plate-inset: 14px;  /* 角マークから画像までの余白 */
   position: relative;
   display: inline-block;
   max-width: 100%;
@@ -134,19 +134,15 @@ body { min-height: 100vh; }
   max-width: 100%;
   height: auto;
 }
-.plate-frame::before { /* 図郭の罫線。マークより控えめに */
-  content: "";
+.plate-frame .mark {
   position: absolute;
-  inset: 0;
-  border: 1px solid currentColor;
-  opacity: 0.35;
-  pointer-events: none;
+  border: 0 solid currentColor;
 }
-.plate-frame .mark { position: absolute; }
-.plate-frame .mark.tl { top: 0;    left: 0;  transform: translate(-50%, -50%); }
-.plate-frame .mark.tr { top: 0;    right: 0; transform: translate(50%, -50%); }
-.plate-frame .mark.bl { bottom: 0; left: 0;  transform: translate(-50%, 50%); }
-.plate-frame .mark.br { bottom: 0; right: 0; transform: translate(50%, 50%); }
+.plate-frame .mark::before, .plate-frame .mark::after { content: none; }
+.plate-frame .mark.tl { top: 0;    left: 0;  border-width: 1px 0 0 1px; }
+.plate-frame .mark.tr { top: 0;    right: 0; border-width: 1px 1px 0 0; }
+.plate-frame .mark.bl { bottom: 0; left: 0;  border-width: 0 0 1px 1px; }
+.plate-frame .mark.br { bottom: 0; right: 0; border-width: 0 1px 1px 0; }
 .plate-caption {
   display: flex;
   margin-top: 18px;
