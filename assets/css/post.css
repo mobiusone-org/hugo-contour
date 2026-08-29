@@ -120,9 +120,11 @@ body { min-height: 100vh; }
   text-align: center;
 }
 .plate-frame {
+  --plate-inset: 14px;  /* 図郭（+ マークと罫線）から画像までの余白 */
   position: relative;
   display: inline-block;
   max-width: 100%;
+  padding: var(--plate-inset);
   line-height: 0;
   color: var(--fg);
 }
