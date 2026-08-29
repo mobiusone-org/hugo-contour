@@ -1,9 +1,11 @@
 {{- /* 本文中の画像は「図版（plate）」として、等高線フレームと同じ + マークを四隅に打って囲む。
-       title があれば計測ラベル（.coords）と同じ体裁のキャプションを添える。 */ -}}
-<figure class="plate">
-  <span class="plate-frame" aria-hidden="true">
+       画像は段落（<p>）内に現れるため、ブロックの <figure> ではなく span を組んで
+       HTML を壊さない（CSS で block にする）。title があれば計測ラベル（.coords）と
+       同じ体裁のキャプションを添える。 */ -}}
+<span class="plate" role="figure"{{ with .Title }} aria-label="{{ . }}"{{ end }}>
+  <span class="plate-frame">
     {{ partial "marks.html" . }}
     <img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}" loading="lazy" decoding="async">
   </span>
-  {{- with .Title }}<figcaption class="coords">{{ . }}</figcaption>{{ end }}
-</figure>
+  {{- with .Title }}<span class="plate-caption coords">{{ . }}</span>{{ end }}
+</span>
