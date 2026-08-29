@@ -1,0 +1,9 @@
+{{- /* 本文中の画像は「図版（plate）」として、等高線フレームと同じ + マークを四隅に打って囲む。
+       title があれば計測ラベル（.coords）と同じ体裁のキャプションを添える。 */ -}}
+<figure class="plate">
+  <span class="plate-frame" aria-hidden="true">
+    {{ partial "marks.html" . }}
+    <img src="{{ .Destination | safeURL }}" alt="{{ .PlainText }}" loading="lazy" decoding="async">
+  </span>
+  {{- with .Title }}<figcaption class="coords">{{ . }}</figcaption>{{ end }}
+</figure>
