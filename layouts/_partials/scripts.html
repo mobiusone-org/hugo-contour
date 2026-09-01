@@ -1,4 +1,10 @@
-{{- $js := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") (resources.Get "js/theme.js") | resources.Concat "js/contour.bundle.js" -}}
+{{- /* Concat のキャッシュキーと出力内容を一致させる。
+       showCodeCopy が言語別に異なっても、異なるバンドルとして生成する。 */ -}}
+{{- $includeCopy := ne site.Params.showCodeCopy false -}}
+{{- $variant := cond $includeCopy "copy" "nocopy" -}}
+{{- $sources := slice (resources.Get "js/contour.js") (resources.Get "js/main.js") (resources.Get "js/theme.js") -}}
+{{- if $includeCopy }}{{ $sources = $sources | append (resources.Get "js/copy.js") }}{{ end -}}
+{{- $js := $sources | resources.Concat (printf "js/contour.bundle.%s.js" $variant) -}}
 {{- if hugo.IsProduction }}{{ $js = $js | minify | fingerprint }}{{ end -}}
 <script src="{{ $js.RelPermalink }}"{{ with $js.Data.Integrity }} integrity="{{ . }}" crossorigin="anonymous"{{ end }}></script>
 {{- /* 検索ページだけクライアント検索スクリプトを足す。 */ -}}

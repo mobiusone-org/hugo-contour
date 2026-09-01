@@ -121,6 +121,25 @@ tags: ["graphics", "canvas"]
 ---
 ```
 
+### Images (plates)
+
+Markdown images in the body are rendered as *plates*: framed by L-shaped corner
+marks cut from the same stock as the contour-frame `+` marks (16px, 1px,
+`currentColor`), with the image inset from the frame. A `title` becomes a
+caption in the measurement-label style:
+
+```markdown
+![Waves breaking on a shore at dusk](waves.webp "Sea level — the 0 m isoline")
+```
+
+The source is resolved against the page bundle first, then global `assets/`;
+when found, the resource's URL and intrinsic `width`/`height` are emitted to
+avoid layout shift. Absolute paths (`/images/...`) are assumed to live in the
+site's `static/` directory and get their dimensions via `imageConfig`. When
+dimensions cannot be determined (remote URLs, SVG, a non-default `staticDir`),
+the attributes are simply omitted. See the marching-squares post in the
+exampleSite for a live example.
+
 ## Customizing Contour Lines
 
 Pass options through data attributes on `canvas[data-contour]`:

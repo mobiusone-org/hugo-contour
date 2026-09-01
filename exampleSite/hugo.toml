@@ -27,6 +27,8 @@ theme = "contour"
   # 地図風装飾ラベルの既定値。
   axis = "Elevation / Isoline Field — N=54"
   coords = "35.6812° N — 139.7671° E"
+  # コードブロックのコピーボタン。消したい場合だけ false を指定する(既定は表示)。
+  # showCodeCopy = false
 
 [markup]
   [markup.highlight]
