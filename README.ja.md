@@ -115,6 +115,24 @@ tags: ["graphics", "canvas"]
 ---
 ```
 
+### 画像（図版）
+
+本文中の Markdown 画像は「図版（plate）」として表示される。等高線フレームの
++ マークと同じ部材（16px・1px・`currentColor`）から切り出した L 字マークが四隅を
+囲み、画像はその内側に少し余白を取って収まる。`title` を書くと計測ラベル体裁の
+キャプションになる:
+
+```markdown
+![夕暮れの浜に崩れる波](waves.webp "海面 — 標高 0 m の等値線")
+```
+
+src はまずページバンドル、次にグローバル `assets/` から解決され、見つかれば
+そのリソースの URL と実寸（`width`/`height`）が出力されてレイアウトシフトを防ぐ。
+絶対パス（`/images/...`）はサイトの `static/` 直下にあるとみなして `imageConfig`
+で実寸を取得する。実寸が取れない場合（リモート URL・SVG・既定外の `staticDir`
+など）は属性を出さないだけで、表示は壊れない。実例は exampleSite の
+marching-squares 記事を参照。
+
 ## 等高線のカスタマイズ
 
 `canvas[data-contour]` に data 属性で渡す:
