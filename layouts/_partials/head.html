@@ -17,6 +17,15 @@
 </script>
 <title>{{ if .IsHome }}{{ .Title }}{{ else }}{{ .Title }} — {{ site.Title }}{{ end }}</title>
 {{ with or .Description site.Params.description }}<meta name="description" content="{{ . }}">{{ end }}
+{{- with site.Params.author }}
+<meta name="author" content="{{ . }}">{{ end }}
+{{- /* keywords はページの tags を優先し、無ければサイト既定。文字列/配列のどちらでも受ける。 */ -}}
+{{- with or .Params.tags site.Params.keywords }}
+<meta name="keywords" content="{{ if reflect.IsSlice . }}{{ delimit . ", " }}{{ else }}{{ . }}{{ end }}">{{ end }}
+{{- /* RSS の自動発見。自分の RSS 出力があればそれ、無いページではサイトのフィードを案内する。
+       RSS 出力を無効にしたサイトではどちらも無いので何も出ない。 */ -}}
+{{- with or (.OutputFormats.Get "rss") (site.Home.OutputFormats.Get "rss") }}
+<link rel="alternate" type="application/rss+xml" title="{{ site.Title }}" href="{{ .Permalink }}">{{ end }}
 {{- /* 翻訳版があるページは hreflang の alternate リンクで言語版を検索エンジンへ通知する。
        自分自身も含めた全言語分を出す（hreflang セットの相互参照要件）。 */ -}}
 {{- if .IsTranslated }}
