@@ -115,6 +115,36 @@ tags: ["graphics", "canvas"]
 ---
 ```
 
+### 共有ボタン
+
+`showShare = true` を設定すると、各記事のタイトル直下に共有チップの行が付きます。
+チップはテーマ切り替えボタンと同じ正方形で、中身は `currentColor` で描いた
+アイコンだけです。共有先の名前はツールチップと `aria-label` で伝えます。
+
+```toml
+[params]
+  showShare = true
+  # 任意: 表示するネットワークと順序。以下が既定値。
+  shareNetworks = ["x", "bluesky", "hackernews", "reddit", "copy", "native"]
+```
+
+使えるネットワーク: `x`, `bluesky`, `threads`, `mastodon`, `hatena`, `hackernews`,
+`reddit`, `facebook`, `line`, `telegram`, `whatsapp`, `mail`。加えて `assets/js/share.js` が動かす
+操作が 2 つあり、`copy` は記事 URL をクリップボードへコピーし（アイコンがチェック印に
+変わります）、`native` は Web Share API で端末の共有シートを開きます。どちらも
+ブラウザが非対応なら自動的に消えます。`shareNetworks` は言語ごとにも設定でき、
+日本語だけ `hatena` を足すといった使い方ができます。
+
+ページ単位では front matter の `share = false` で非表示に、`posts/` 外の
+単独ページでは `share = true` で表示にできます。
+
+ブランドアイコンは [Simple Icons](https://simpleicons.org/)（CC0 1.0）から取り込み、
+`_partials/share-icons.html` にインライン化しています。ロゴの商標は各社に帰属する
+ため、有効にするネットワークについては各ブランドのガイドラインを確認してください。
+LinkedIn は利用規約が第三者によるロゴ使用を認めておらず（Simple Icons が削除した
+理由も同じ）、提供していません。`mail` / `copy` / `native` のアイコンはテーマ独自の
+線画です。
+
 ### 画像（図版）
 
 本文中の Markdown 画像は「図版（plate）」として表示される。等高線フレームの

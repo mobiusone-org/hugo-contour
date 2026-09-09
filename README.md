@@ -121,6 +121,36 @@ tags: ["graphics", "canvas"]
 ---
 ```
 
+### Share buttons
+
+Set `showShare = true` to place a row of share chips under the title of every
+post. Every chip is the same square as the theme toggle, holds only an icon
+drawn in `currentColor`, and names its target in a tooltip and `aria-label`:
+
+```toml
+[params]
+  showShare = true
+  # Optional: pick networks and their order. This is the default set.
+  shareNetworks = ["x", "bluesky", "hackernews", "reddit", "copy", "native"]
+```
+
+Available networks: `x`, `bluesky`, `threads`, `mastodon`, `hatena`, `hackernews`,
+`reddit`, `facebook`, `line`, `telegram`, `whatsapp`, `mail`, plus two actions handled
+by `assets/js/share.js`: `copy` copies the post URL to the clipboard (the icon
+flips to a check mark) and `native` opens the device share sheet via the Web
+Share API. Both hide themselves where the browser lacks support.
+`shareNetworks` can be set per language, e.g. to add `hatena` only for Japanese.
+
+Per page, `share = false` in front matter hides the row; `share = true` shows
+it on a standalone page outside `posts/`, where it is normally omitted.
+
+Brand icons are taken from [Simple Icons](https://simpleicons.org/) (CC0 1.0)
+and inlined in `_partials/share-icons.html`; the logos remain trademarks of
+their owners, so check each brand's guidelines for the networks you enable.
+LinkedIn is not offered because its terms do not permit third-party use of the
+logo, which is why Simple Icons dropped it. The `mail`, `copy` and `native`
+icons are the theme's own line drawings.
+
 ### Images (plates)
 
 Markdown images in the body are rendered as *plates*: framed by L-shaped corner

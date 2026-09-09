@@ -11,6 +11,12 @@
         <span>Read — {{ .ReadingTime }} min</span>
       </div>
       <h1 class="post-title">{{ .Title }}</h1>
+      {{- /* 共有チップはタイトル直下。サイト設定 showShare で全体を、front matter の share で
+             個別に切り替える（share = false で非表示、ルート直下ページは share = true で表示）。 */ -}}
+      {{ $share := .Params.share }}
+      {{ if and site.Params.showShare (ne $share false) (or .Section $share) }}
+      {{ partial "share.html" . }}
+      {{ end }}
     </header>
 
     <div class="post-body">
