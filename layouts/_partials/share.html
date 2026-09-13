@@ -17,7 +17,7 @@
      "hatena"     (dict "name" "Hatena Bookmark" "href" (printf "https://b.hatena.ne.jp/entry/panel/?mode=confirm&%s" (querify "url" $url "title" $title)))
      "hackernews" (dict "name" "Hacker News"     "href" (printf "https://news.ycombinator.com/submitlink?%s" (querify "u" $url "t" $title)))
      "reddit"     (dict "name" "Reddit"          "href" (printf "https://www.reddit.com/submit?%s" (querify "url" $url "title" $title)))
-     "threads"    (dict "name" "Threads"         "href" (printf "https://www.threads.com/intent/post?text=%s&url=%s" (replace (urlquery $title) "+" "%%20") (urlquery $url)))
+     "threads"    (dict "name" "Threads"         "href" (printf "https://www.threads.com/intent/post?text=%s&url=%s" (replace (urlquery $title) "+" "%20") (urlquery $url)))
      "facebook"   (dict "name" "Facebook"        "href" (printf "https://www.facebook.com/sharer/sharer.php?%s" (querify "u" $url)))
      "line"       (dict "name" "LINE"            "href" (printf "https://social-plugins.line.me/lineit/share?%s" (querify "url" $url "text" $title)))
      "telegram"   (dict "name" "Telegram"        "href" (printf "https://t.me/share/url?%s" (querify "url" $url "text" $title)))
