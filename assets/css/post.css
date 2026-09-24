@@ -319,6 +319,55 @@ body { min-height: 100vh; }
   text-decoration: none;
 }
 
+/* ---- 共有チップ（share.html） ----
+   タイトル直下に正方形のアイコンチップを並べる。チップは右上の操作群（theme-toggle /
+   lang-switch）と同じ寸法（--toggle-size）・1px ボーダーで、共有先に関わらず同じ大きさ。
+   アイコンは 24 の viewBox を同じ辺で描き、currentColor で塗るのでホバーの前景/背景反転
+   （サイト共通）にそのまま追従する。見出しは付けず、共有先の名前は title / aria-label で伝える。 */
+.post-share {
+  margin-top: clamp(20px, 3vh, 28px);
+}
+.post-share-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.post-share-list a,
+.post-share-list button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--toggle-size);
+  height: var(--toggle-size);
+  padding: 0;
+  border: 1px solid currentColor;
+  background: var(--bg);
+  color: var(--fg);
+  cursor: pointer;
+  transition: background .2s, color .2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.post-share-list a:hover,
+.post-share-list button:hover,
+.post-share-list button.is-copied {
+  background: var(--fg);
+  color: var(--bg);
+}
+.post-share-list a:focus-visible,
+.post-share-list button:focus-visible { outline: 1px solid currentColor; outline-offset: 3px; }
+.share-icon {
+  width: 15px;
+  height: 15px;
+  display: block;
+}
+/* コピー完了: アイコンをチェック印に差し替え、1.5 秒だけ反転表示する（share.js） */
+.share-icon-done { display: none; }
+.is-copied .share-icon { display: none; }
+.is-copied .share-icon-done { display: block; }
+
 .post-nav {
   display: flex;
   justify-content: space-between;
