@@ -14,7 +14,7 @@ A stylish Hugo theme that blends contour-line motifs with typography.
 
 ## Requirements
 
-Hugo **extended** v0.146.0 or later, required for the new template system.
+Hugo **extended** v0.158.0 or later, required for the new template system and `.Language.Locale`.
 
 ## Live Demo
 
@@ -69,6 +69,8 @@ theme = "contour"
   logoTLD = ".org"              # Lighter suffix shown after the logo name
   kicker = "Software Engineering - Est. 2014"
   description = "Site description."
+  author = "Your Name"                        # author meta and JSON-LD author
+  images = ["/images/og-default.png"]         # Default share-preview image (under static/)
   axis = "Elevation / Isoline Field - N=54"   # Map-style decorative label
   coords = "35.6812 deg N - 139.7671 deg E"   # Initial coordinates, refreshed on click
 
@@ -150,6 +152,33 @@ their owners, so check each brand's guidelines for the networks you enable.
 LinkedIn is not offered because its terms do not permit third-party use of the
 logo, which is why Simple Icons dropped it. The `mail`, `copy` and `native`
 icons are the theme's own line drawings.
+
+### SEO metadata
+
+`_partials/seo.html` adds search-engine and share-preview metadata to the
+`<head>` of every page. Nothing needs to be enabled; it reads the existing
+`description`, `author` and `images` params.
+
+- `description` meta and `og:description`: front matter `description`, then
+  (for posts) a 160-character plain-text summary, then `params.description`.
+  The summary can pick up headings, so a `description` in front matter is the
+  reliable option.
+- `<link rel="canonical">`.
+- `robots`: the search page and 404 are `noindex`; front matter `robots`
+  overrides it.
+- `hreflang` links when translations exist, with the default language as
+  `x-default`.
+- Open Graph: `og:type` is `article` for posts and `website` elsewhere;
+  `og:locale` comes from the language's `locale`. Posts also get
+  `article:published_time` / `modified_time` / `section` / `tag`.
+- A representative `og:image` (with width / height when they can be read),
+  resolved from front matter `images` (list) or `image`, then a bundle image
+  named `*feature*` / `*cover*` / `*thumbnail*`, then `params.images`. The
+  recommended size is 1200×630.
+- `twitter:card`: `summary_large_image` for landscape images, `summary` for
+  square ones. Other values are omitted because X falls back to `og:*`.
+- JSON-LD: `WebSite` on the home page and `BlogPosting` for pages under
+  `posts/` (headline, datePublished, dateModified, author, image, keywords).
 
 ### Images (plates)
 

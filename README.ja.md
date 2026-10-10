@@ -12,7 +12,7 @@
 
 ## 必要環境
 
-Hugo **extended** v0.146.0 以降（新テンプレートシステムのため）。
+Hugo **extended** v0.158.0 以降（新テンプレートシステムと `.Language.Locale` のため）。
 
 ## LiveDemo
 
@@ -67,6 +67,8 @@ theme = "contour"
   logoTLD = ".org"              # ロゴ末尾の細字（TLD）
   kicker = "Software Engineering — Est. 2014"
   description = "サイトの説明。"
+  author = "Your Name"                        # author メタと JSON-LD の著者
+  images = ["/images/og-default.png"]         # 共有プレビュー画像の既定（static/ 配下）
   axis = "Elevation / Isoline Field — N=54"   # 地図ふう装飾ラベル
   coords = "35.6812° N — 139.7671° E"          # 座標表示の初期値（クリックで更新）
 
@@ -144,6 +146,27 @@ tags: ["graphics", "canvas"]
 LinkedIn は利用規約が第三者によるロゴ使用を認めておらず（Simple Icons が削除した
 理由も同じ）、提供していません。`mail` / `copy` / `native` のアイコンはテーマ独自の
 線画です。
+
+### SEO メタデータ
+
+`_partials/seo.html` が全ページの `<head>` に、検索エンジンと共有プレビュー向けの
+メタデータを出します。設定は不要で、既存の `description` / `author` / `images` を読みます。
+
+- `description` メタと `og:description`。front matter の `description` →（記事なら）本文の要約
+  160 字 → `params.description` の順で決めます。要約は見出しが混ざるので、記事には
+  `description` を書くのが確実です。
+- `<link rel="canonical">`。
+- `robots`。検索ページと 404 は `noindex`。front matter の `robots` で上書きできます。
+- 翻訳版がある場合の `hreflang`（既定言語を `x-default` として併記）。
+- Open Graph（`og:type` は記事なら `article`、他は `website`。`og:locale` は言語の
+  `locale` から）。記事には `article:published_time` / `modified_time` / `section` / `tag` も。
+- 代表画像 `og:image`（実寸が分かれば width / height も）。探す順は front matter の
+  `images`（配列）または `image` → ページバンドル内の `*feature*` / `*cover*` / `*thumbnail*`
+  画像 → `params.images`。`og:image` 推奨サイズは 1200×630 です。
+- `twitter:card`。横長の画像なら `summary_large_image`、正方形などは `summary`。
+  他の値は `og:*` が読まれるので出しません。
+- JSON-LD。ホームは `WebSite`、`posts/` 配下の記事は `BlogPosting`
+  （headline / datePublished / dateModified / author / image / keywords）。
 
 ### 画像（図版）
 
