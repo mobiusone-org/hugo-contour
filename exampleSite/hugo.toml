@@ -24,6 +24,10 @@ theme = "contour"
   logoTLD = " theme"
   kicker = "Topographic Theme for Hugo"
   description = "トポグラフィックなエンジニアリング・ブログHugoテーマ。"
+  # SEO メタデータ（_partials/seo.html）。author は author メタと JSON-LD の著者に、
+  # images は共有プレビュー画像の既定値（static/ 配下、推奨 1200×630）になる。
+  author = "Contour"
+  # images = ["/images/og-default.png"]
   # 地図風装飾ラベルの既定値。
   axis = "Elevation / Isoline Field — N=54"
   coords = "35.6812° N — 139.7671° E"
