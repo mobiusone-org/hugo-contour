@@ -12,7 +12,7 @@
 
 ## 必要環境
 
-Hugo **extended** v0.158.0 以降（新テンプレートシステムと `.Language.Locale` のため）。
+Hugo **extended** v0.160.0 以降（新テンプレートシステム、見出しレンダーフックの `.Ordinal`、`.Language.Locale` のため）。
 
 ## LiveDemo
 

@@ -14,7 +14,7 @@ A stylish Hugo theme that blends contour-line motifs with typography.
 
 ## Requirements
 
-Hugo **extended** v0.158.0 or later, required for the new template system and `.Language.Locale`.
+Hugo **extended** v0.160.0 or later: the new template system, `.Ordinal` in the heading render hook, and `.Language.Locale`.
 
 ## Live Demo
 

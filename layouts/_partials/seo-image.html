@@ -24,7 +24,10 @@
   {{- with try (.Width) }}{{ with .Value }}{{ $out = merge $out (dict "width" . "height" $res.Height) }}{{ end }}{{ end -}}
 {{- else }}
   {{- with $src }}
-    {{- $out = merge $out (dict "url" (absURL .)) -}}
+    {{- /* 先頭の / はサイトルート相対の意味で受けるが、absURL に / 始まりを渡すとホスト直下に
+           解決されて baseURL のサブパス（例: /contour/）が落ちる。剥がして baseURL 相対で解決する。
+           外部の絶対 URL は absURL がそのまま返す。 */ -}}
+    {{- $out = merge $out (dict "url" (absURL (strings.TrimPrefix "/" .))) -}}
     {{- if hasPrefix . "/" }}
       {{- with try (imageConfig (printf "static%s" .)) }}{{ with .Value }}{{ $out = merge $out (dict "width" .Width "height" .Height) }}{{ end }}{{ end -}}
     {{- end -}}
