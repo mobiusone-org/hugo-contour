@@ -178,6 +178,25 @@ body { min-height: 100vh; }
 }
 .post-body a:hover { text-decoration: none; }
 
+/* ---- 見出しのアンカーリンク ----
+   render-heading.html が各見出しの末尾に置く「#」。普段は透明にしておき、見出しのホバーか
+   リンク自体のフォーカスで現す。ホバーの無い端末では薄く常時表示してコピー手段を残す。
+   h2 は flex（連番 <i> との gap）なので margin ではなく gap に任せる。 */
+.heading-anchor {
+  margin-left: 0.4em;
+  font-weight: 300;
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.post-body h2 .heading-anchor { margin-left: 0; }
+:is(h1, h2, h3, h4, h5, h6):hover > .heading-anchor,
+.heading-anchor:hover,
+.heading-anchor:focus-visible { opacity: 0.6; text-decoration: none; }
+@media (hover: none) {
+  .heading-anchor { opacity: 0.35; }
+}
+
 .post-body ul, .post-body ol {
   margin: 0 0 1.7em 1.4em;
 }
