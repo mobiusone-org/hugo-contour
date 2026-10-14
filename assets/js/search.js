@@ -81,7 +81,8 @@
     }
   }
 
-  // 得点: タイトル 3 / タグ 2 / 本文 1 を、編集距離に応じて減らして加算する（完全一致 = 満点）。
+  // 順位: まず完全一致した語の数、次にフィールド得点（タイトル 3 / タグ 2 / 本文 1 を
+  // 編集距離に応じて減らして加算）。近似一致の加点だけでは完全一致を抜けない。
   function search(q) {
     const terms = normalize(q).split(/\s+/).filter(Boolean);
     if (!terms.length) { render([], ''); return; }
@@ -89,19 +90,22 @@
     const scored = [];
     for (const d of docs) {
       let score = 0;
+      let exact = 0;
       let matchedAll = true;
       for (const t of terms) {
         const k = tolerance(t);
+        const dTitle = distance(d.title, t, k);
+        const dTags = d.tags.reduce((min, tag) => Math.min(min, distance(tag, t, k)), k + 1);
+        const dBody = distance(d.body, t, k);
+        const best = Math.min(dTitle, dTags, dBody);
+        if (best > k) { matchedAll = false; break; }
+        if (best === 0) exact++;
         const credit = (dist) => (dist > k ? 0 : 1 - dist / (k + 1));
-        const inTitle = credit(distance(d.title, t, k));
-        const inTags = credit(d.tags.reduce((min, tag) => Math.min(min, distance(tag, t, k)), k + 1));
-        const inBody = credit(distance(d.body, t, k));
-        if (!inTitle && !inTags && !inBody) { matchedAll = false; break; }
-        score += 3 * inTitle + 2 * inTags + inBody;
+        score += 3 * credit(dTitle) + 2 * credit(dTags) + credit(dBody);
       }
-      if (matchedAll) scored.push({ doc: d.doc, score });
+      if (matchedAll) scored.push({ doc: d.doc, exact, score });
     }
-    scored.sort((a, b) => b.score - a.score);
+    scored.sort((a, b) => b.exact - a.exact || b.score - a.score);
     render(scored.map((s) => s.doc), q);
   }
 
