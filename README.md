@@ -99,8 +99,9 @@ theme = "contour"
 | Generated automatically | `taxonomy.html` / `term.html` | `/tags/` and `/tags/<tag>/` |
 
 Every heading rendered from Markdown gets an `id` and a trailing `#` link to
-itself (`.heading-anchor`): always visible, light-weight and dimmed, sized at
-0.8em of the heading on its baseline. Set `showHeadingAnchors = false` in
+itself (`.heading-anchor`): always visible, light-weight and dimmed, on the
+heading's baseline. It is the heading's own size, except on the large h2 where
+it is 0.8em. Set `showHeadingAnchors = false` in
 `[params]` to omit the link.
 
 For pages in the `posts/` section, `page.html` displays the date, reading time,
