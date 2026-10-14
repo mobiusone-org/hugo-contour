@@ -257,19 +257,24 @@ body { min-height: 100vh; }
   margin: 3em 0;
 }
 
-/* ---- 記事一覧（セクションページ） ---- */
+/* ---- 記事一覧（セクション / タグ / アーカイブ / 検索結果で共通） ----
+   1 項目 = タイトルと日付の行（.post-list-head）＋ 要約 1 段落（.post-list-summary、省略可）。
+   項目は罫線 1 本で区切り、要約は本文より一段小さく細く、不透明度を落として地図の注記のように添える。
+   要約の行長は読みやすさのため 60ch で止め、日付の列には重ねない。 */
 .post-list {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 .post-list li {
+  padding: 22px 0;
+  border-bottom: 1px solid rgba(var(--fg-rgb), 0.4);
+}
+.post-list-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 18px;
-  padding: 18px 0;
-  border-bottom: 1px solid rgba(var(--fg-rgb), 0.4);
 }
 .post-list a {
   color: var(--fg);
@@ -277,6 +282,14 @@ body { min-height: 100vh; }
   font-size: 18px;
   font-weight: 600;
   letter-spacing: -0.01em;
+}
+.post-list-summary {
+  margin: 10px 0 0;
+  max-width: 60ch;
+  font-size: 13px;
+  font-weight: 300;
+  line-height: 1.8;
+  opacity: 0.75;
 }
 .post-list-date {
   font-size: 11px;

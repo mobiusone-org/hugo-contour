@@ -8,7 +8,7 @@
       "url" .RelPermalink
       "date" (.Date.Format (site.Params.dateFormat | default "2006-01-02"))
       "tags" (.Params.tags | default slice)
-      "summary" (.Summary | plainify)
+      "summary" (partial "summary-text.html" .)
       "content" .Plain
   ) -}}
 {{- end -}}

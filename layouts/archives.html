@@ -23,8 +23,10 @@
         <ul class="post-list">
           {{ range .Pages }}
           <li>
-            <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-            <span class="post-list-date">{{ .Date.Format "01-02" }}</span>
+            <div class="post-list-head">
+              <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+              <span class="post-list-date">{{ .Date.Format "01-02" }}</span>
+            </div>
           </li>
           {{ end }}
         </ul>

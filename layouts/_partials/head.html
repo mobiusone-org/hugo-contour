@@ -1,5 +1,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{{- /* モバイルブラウザの枠色。既定（ダーク）の背景色を出し、ライト表示や手動切り替えの際は
+       theme.js が --bg の実値で上書きする。既定値は base.css の --bg-src と一致させる。 */ -}}
+<meta name="theme-color" content="{{ site.Params.bg | default "#0a0101" }}">
 {{- /* テーマの初期化。CSS 適用前に data-theme を確定させ、ちらつき（FOUC）を防ぐ。
        保存済みの選択を最優先し、無ければ OS の配色設定に従う。既定はダーク。 */ -}}
 <script>
