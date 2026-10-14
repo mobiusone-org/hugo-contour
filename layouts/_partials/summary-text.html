@@ -1,0 +1,7 @@
+{{- /* 記事のプレーンテキスト要約。front matter の description を優先し、無ければ .Summary
+       （<!--more--> まで、または summaryLength 分の HTML）から見出し（アンカーの # を含む）を
+       丸ごと落とし、残りのタグを外して空白を畳む。記事一覧・検索索引・seo.html で共有し、
+       長さの切り詰めは呼び出し側で行う。 */ -}}
+{{- $s := .Description -}}
+{{- if not $s }}{{ $s = .Summary | replaceRE `(?s)<h[1-6][^>]*>.*?</h[1-6]>` " " | plainify | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace }}{{ end -}}
+{{- return $s -}}

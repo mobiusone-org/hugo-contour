@@ -61,6 +61,12 @@
     })
     .catch(() => { docs = []; });
 
+  // 索引の summary は plainify 済みだが改行を含むので、一覧と同じ 140 字に畳む。
+  const clip = (s) => {
+    const t = String(s).replace(/\s+/g, ' ').trim();
+    return t.length > 140 ? `${t.slice(0, 140).trimEnd()}…` : t;
+  };
+
   const escapeHTML = (s) =>
     String(s).replace(/[&<>"]/g, (c) =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -69,8 +75,11 @@
     results.innerHTML = matches
       .map(
         (m) => `<li>
-          <a href="${m.url}">${escapeHTML(m.title)}</a>
-          <span class="post-list-date">${escapeHTML(m.date)}</span>
+          <div class="post-list-head">
+            <a href="${m.url}">${escapeHTML(m.title)}</a>
+            <span class="post-list-date">${escapeHTML(m.date)}</span>
+          </div>
+          ${m.summary ? `<p class="post-list-summary">${escapeHTML(clip(m.summary))}</p>` : ''}
         </li>`
       )
       .join('');
