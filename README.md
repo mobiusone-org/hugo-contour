@@ -10,12 +10,12 @@ A stylish Hugo theme that blends contour-line motifs with typography.
 - Supports tags, archives, and full-text search out of the box.
 - Bundles CSS and JavaScript with Hugo Pipes. Production builds are minified,
   fingerprinted, and served with SRI metadata.
-- Automatically numbers h2 headings and adds an anchor link (`#`) to every
-  heading with `_markup/render-heading.html`.
+- Headings share one design at every level, each with an anchor link (`#`)
+  added by `_markup/render-heading.html`.
 
 ## Requirements
 
-Hugo **extended** v0.160.0 or later: the new template system, `.Ordinal` in the heading render hook, and `.Language.Locale`.
+Hugo **extended** v0.160.0 or later: the new template system and `.Language.Locale`.
 
 ## Live Demo
 

@@ -152,23 +152,18 @@ body { min-height: 100vh; }
   opacity: 0.8;
 }
 
-.post-body h2 {
-  display: flex;
-  align-items: baseline;
-  gap: 16px;
+/* ---- 見出し ----
+   レベルを問わず同じ書体（太字・大文字・広い字間）で、大きさだけ段階を付ける。
+   余白は em 指定なので、小さい見出しほど自動的に詰まる。 */
+.post-body :is(h2, h3, h4, h5, h6) {
   margin: 3em 0 1.4em;
   font-size: 19px;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
-.post-body h2 i {
-  font-style: normal;
-  font-size: 12px;
-  font-weight: 300;
-  letter-spacing: 0.2em;
-  opacity: 0.6;
-}
+.post-body h3 { font-size: 17px; }
+.post-body :is(h4, h5, h6) { font-size: 15px; }
 
 .post-body a {
   color: var(--fg);
@@ -183,7 +178,6 @@ body { min-height: 100vh; }
    不透明度 0.6 で見出し本文より一段引いた印としておく。ホバー/フォーカスで不透明にするだけで、
    動きは付けない。大きさは見出しと同じを基本にし、h2（19px）だけ 0.8 倍に落とす。h3 以下で
    0.8 倍にすると本文（15px）より小さくなり、印として弱すぎるため。
-   h2 は flex（align-items: baseline、連番 <i> との gap）なので margin ではなく gap に任せる。
    .post-body a の下線より優先させるため .post-body 付きで書く。 */
 .post-body .heading-anchor {
   margin-left: 0.5em;
@@ -192,7 +186,7 @@ body { min-height: 100vh; }
   text-decoration: none;
   opacity: 0.6;
 }
-.post-body h2 .heading-anchor { margin-left: 0; font-size: 0.8em; }
+.post-body h2 .heading-anchor { font-size: 0.8em; }
 .post-body .heading-anchor:hover,
 .post-body .heading-anchor:focus-visible { opacity: 1; }
 
