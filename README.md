@@ -10,8 +10,8 @@ A stylish Hugo theme that blends contour-line motifs with typography.
 - Supports tags, archives, and full-text search out of the box.
 - Bundles CSS and JavaScript with Hugo Pipes. Production builds are minified,
   fingerprinted, and served with SRI metadata.
-- Automatically numbers h2 headings and adds a hover-revealed anchor link (`#`)
-  to every heading with `_markup/render-heading.html`.
+- Automatically numbers h2 headings and adds an anchor link (`#`) to every
+  heading with `_markup/render-heading.html`.
 
 ## Requirements
 
@@ -99,8 +99,9 @@ theme = "contour"
 | Generated automatically | `taxonomy.html` / `term.html` | `/tags/` and `/tags/<tag>/` |
 
 Every heading rendered from Markdown gets an `id` and a trailing `#` link to
-itself (`.heading-anchor`), shown on hover or keyboard focus (and faintly on
-touch devices). Set `showHeadingAnchors = false` in `[params]` to omit the link.
+itself (`.heading-anchor`): always visible, light-weight and dimmed, sized at
+0.8em of the heading on its baseline. Set `showHeadingAnchors = false` in
+`[params]` to omit the link.
 
 For pages in the `posts/` section, `page.html` displays the date, reading time,
 tags, and previous/next navigation. For standalone pages at the content root,

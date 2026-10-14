@@ -8,7 +8,7 @@
   `section.html` / `taxonomy.html` / `term.html`、予約ディレクトリ `_partials` と `_markup`）に準拠。
 - タグ（タクソノミー）・アーカイブ・全文検索を標準でサポート。
 - CSS / JS は Hugo Pipes で結合。本番ビルドでは minify + fingerprint + SRI。
-- 見出し（h2）の連番と、各見出しのアンカーリンク（ホバーで現れる `#`）は
+- 見出し（h2）の連番と、各見出しのアンカーリンク（`#`）は
   `_markup/render-heading.html` が自動付与。
 
 ## 必要環境
@@ -100,7 +100,7 @@ theme = "contour"
 ルート直下の単体ページ（`feature.md` など）では見出しと本文だけにする。
 
 Markdown から描かれる見出しには `id` と、自身を指す `#` リンク（`.heading-anchor`）が付く。
-ホバーまたはキーボードフォーカスで現れ、ホバーの無い端末では薄く常時表示する。
+見出しの 0.8 倍の大きさでベースラインに揃え、細字・半透明で常時表示する。
 `[params]` の `showHeadingAnchors = false` で消せる。
 
 ### 検索
