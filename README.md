@@ -10,7 +10,8 @@ A stylish Hugo theme that blends contour-line motifs with typography.
 - Supports tags, archives, and full-text search out of the box.
 - Bundles CSS and JavaScript with Hugo Pipes. Production builds are minified,
   fingerprinted, and served with SRI metadata.
-- Automatically numbers h2 headings with `_markup/render-heading.html`.
+- Automatically numbers h2 headings and adds a hover-revealed anchor link (`#`)
+  to every heading with `_markup/render-heading.html`.
 
 ## Requirements
 
@@ -97,6 +98,10 @@ theme = "contour"
 | `content/search.md` | `search.html` | Full-text search (`layout = "search"`) |
 | Generated automatically | `taxonomy.html` / `term.html` | `/tags/` and `/tags/<tag>/` |
 
+Every heading rendered from Markdown gets an `id` and a trailing `#` link to
+itself (`.heading-anchor`), shown on hover or keyboard focus (and faintly on
+touch devices). Set `showHeadingAnchors = false` in `[params]` to omit the link.
+
 For pages in the `posts/` section, `page.html` displays the date, reading time,
 tags, and previous/next navigation. For standalone pages at the content root,
 such as `feature.md`, it only displays the title and body.
@@ -108,6 +113,14 @@ posts. The index contains each post's title, tags, summary, and body text.
 `content/search.md` (`layout = "search"`) provides a dependency-free client-side
 search UI, and `assets/js/search.js` is loaded only on the search page. You can
 also pass an initial query with `?q=...`.
+
+Matching is normalized on both sides: Unicode NFKC (full-width/half-width
+forms), case folding, katakana → hiragana, and diacritics removal, so `ＨＵＧＯ`,
+`hugo` and `Hugo` are the same query and `いんすとーる` finds `インストール`. Terms of
+4 characters or more also match within one edit (two for 8+ characters), so a
+one-letter typo such as `Gatewey` still finds `Gateway`. Exact matches rank
+above approximate ones; shorter terms must match exactly. All terms must match
+(AND), and results are weighted title > tags > body.
 
 For larger search indexes, you can replace this with
 [Pagefind](https://pagefind.app/) or a similar tool while keeping the same page

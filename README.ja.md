@@ -8,7 +8,8 @@
   `section.html` / `taxonomy.html` / `term.html`、予約ディレクトリ `_partials` と `_markup`）に準拠。
 - タグ（タクソノミー）・アーカイブ・全文検索を標準でサポート。
 - CSS / JS は Hugo Pipes で結合。本番ビルドでは minify + fingerprint + SRI。
-- 見出し（h2）の連番は `_markup/render-heading.html` が自動付与。
+- 見出し（h2）の連番と、各見出しのアンカーリンク（ホバーで現れる `#`）は
+  `_markup/render-heading.html` が自動付与。
 
 ## 必要環境
 
@@ -98,12 +99,22 @@ theme = "contour"
 `page.html` はセクション内の記事（`posts/`）では日付・読了時間・タグ・前後ナビを出し、
 ルート直下の単体ページ（`feature.md` など）では見出しと本文だけにする。
 
+Markdown から描かれる見出しには `id` と、自身を指す `#` リンク（`.heading-anchor`）が付く。
+ホバーまたはキーボードフォーカスで現れ、ホバーの無い端末では薄く常時表示する。
+`[params]` の `showHeadingAnchors = false` で消せる。
+
 ### 検索
 
 `hugo.toml` の `[outputs]` で `home` に `json` を足すと、`posts` セクションの記事から
 `/index.json`（タイトル・タグ・要約・本文）が生成される。`content/search.md`
 （`layout = "search"`）が依存ライブラリ無しのクライアント検索 UI を提供し、検索ページの
 ときだけ `assets/js/search.js` が読み込まれる。`?q=...` で初期クエリを渡せる。
+
+照合は両辺を正規化してから行う: Unicode NFKC（全角/半角）、大文字小文字、カタカナ→ひらがな、
+ダイアクリティカルマーク除去。`ＨＵＧＯ` / `hugo` / `Hugo` は同じクエリになり、`いんすとーる` で
+`インストール` が見つかる。4 文字以上の語は編集距離 1（8 文字以上は 2）までの近似一致も拾うので、
+`Gatewey` のような 1 文字のタイプミスでも `Gateway` に届く。完全一致は近似一致より上位に並び、
+短い語は完全一致のみ。語はすべて含む必要があり（AND）、タイトル > タグ > 本文の重みで並べる。
 より大規模な索引が必要なら、同じページ構造のまま [Pagefind](https://pagefind.app/)
 等への差し替えも可能。
 
