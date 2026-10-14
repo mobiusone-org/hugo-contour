@@ -283,7 +283,8 @@ body { min-height: 100vh; }
   font-weight: 600;
   letter-spacing: -0.01em;
 }
-.post-list-summary {
+/* .post-body p の margin-bottom に負けないよう .post-body 付きで書き、下余白は li の padding に任せる。 */
+.post-body .post-list-summary {
   margin: 10px 0 0;
   max-width: 60ch;
   font-size: 13px;
