@@ -1,10 +1,16 @@
 {{- /* 記事一覧（フラット・新しい順）。section / term ページで共有する。
-       コンテキストは dict "pages" <ページコレクション>。 */ -}}
+       コンテキストは dict "pages" <ページコレクション>。
+       各項目はタイトルと日付の行に、要約（description か本文冒頭）を 1 段落添える。 */ -}}
 <ul class="post-list">
   {{- range (.pages.ByDate.Reverse) }}
   <li>
-    <a href="{{ .RelPermalink }}">{{ .Title }}</a>
-    <span class="post-list-date">{{ .Date.Format (site.Params.dateFormat | default "2006-01-02") }}</span>
+    <div class="post-list-head">
+      <a href="{{ .RelPermalink }}">{{ .Title }}</a>
+      <span class="post-list-date">{{ .Date.Format (site.Params.dateFormat | default "2006-01-02") }}</span>
+    </div>
+    {{- with partial "summary-text.html" . | truncate 140 }}
+    <p class="post-list-summary">{{ . }}</p>
+    {{- end }}
   </li>
   {{- end }}
 </ul>

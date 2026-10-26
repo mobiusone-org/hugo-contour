@@ -8,7 +8,7 @@
 {{- if and (not $desc) .IsPage }}
   {{- /* 要約は HTML なので、見出し連番（render-heading の <i>NN</i>）を落とし、タグは空白に
          置き換えてから実体参照を戻す（plainify だとブロック同士が詰まって読みにくい）。 */ -}}
-  {{- $desc = .Summary | replaceRE `<i>\d+</i>` "" | replaceRE `<[^>]*>` " " | htmlUnescape | replaceRE `\s+` " " | strings.TrimSpace | truncate 160 -}}
+  {{- $desc = partial "summary-text.html" . | truncate 160 -}}
 {{- end -}}
 {{- $desc = $desc | default site.Params.description -}}
 {{- $img := partial "seo-image.html" . -}}

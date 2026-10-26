@@ -89,12 +89,20 @@ theme = "contour"
 | ファイル | レイアウト | 用途 |
 |---|---|---|
 | `content/_index.md` | `home.html` | ランディング（全画面の等高線＋メニュー） |
-| `content/posts/_index.md` | `section.html` | 記事一覧 |
+| `content/posts/_index.md` | `section.html` | 記事一覧（各記事に要約付き） |
 | `content/posts/*.md` | `page.html` | 記事ページ（左サイドバー＋本文） |
 | `content/feature.md` | `page.html` | 単体ページ（日付・読了時間は出さない） |
 | `content/archives.md` | `archives.html` | 年ごとの記事アーカイブ（`layout = "archives"`） |
 | `content/search.md` | `search.html` | 全文検索（`layout = "search"`） |
 | 自動生成 | `taxonomy.html` / `term.html` | `/tags/`・`/tags/<tag>/` |
+
+記事一覧（セクション・タグ・検索結果）は各記事のタイトル・日付に要約を 1 段落添える。
+要約は front matter の `description` があればそれ、無ければ `<!--more-->` までか
+`summaryLength` 語分の本文を 140 字で切ったもの。年別アーカイブはタイトルと日付だけの
+簡潔な形のまま。
+
+`<meta name="theme-color">` には背景色（`params.bg`、未指定ならテーマ既定）を出し、
+モバイルブラウザの枠色をページに合わせる。ライト/ダーク切り替えにも追従する。
 
 `page.html` はセクション内の記事（`posts/`）では日付・読了時間・タグ・前後ナビを出し、
 ルート直下の単体ページ（`feature.md` など）では見出しと本文だけにする。
