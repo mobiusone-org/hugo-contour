@@ -520,9 +520,18 @@ body { min-height: 100vh; }
      揃え、行内の四角の高さを一致させる。 */
   .post-meta {
     display: grid;
-    grid-template-columns: max-content max-content 1fr;
-    gap: 14px 18px;
+    grid-template-columns: repeat(3, max-content);
+    gap: 14px 10px;
   }
+  /* 2 行目は「2020-01-17 / 118THMOBIUS / 1 MIN」の 1 行に収める: READ — のラベルを消し、
+     著者名と読了時間の前に / を置く（kicker の末尾 / と同じ語彙）。列は内容幅で折り返しを禁じ、
+     360px 幅までは本文カラムに収まる。 */
+  .post-meta span { white-space: nowrap; }
+  .post-meta .post-read-label { display: none; }
+  /* 320px 級の端末では字間を詰めて 1 行に収める（0.24em → 0.14em で約 30px 短くなる）。 */
+  @media (max-width: 359px) { .post-meta { letter-spacing: 0.14em; } }
+  .post-meta .post-author::before,
+  .post-meta .post-read::before { content: "/ "; }
   .post-meta .kicker {
     grid-column: 1 / -1;
     justify-self: start;

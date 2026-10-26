@@ -113,8 +113,9 @@ characters. The yearly archive stays compact with title and date only.
 theme default) so mobile browser chrome matches the page; the light/dark toggle
 keeps it in sync.
 
-For pages in the `posts/` section, `page.html` displays the date, reading time,
-tags, and previous/next navigation. For standalone pages at the content root,
+For pages in the `posts/` section, `page.html` displays the date, the author
+(`params.author`, name only, no label), reading time, tags, and previous/next
+navigation. For standalone pages at the content root,
 such as `feature.md`, it only displays the title and body.
 
 ### Search
