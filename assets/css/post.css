@@ -525,11 +525,13 @@ body { min-height: 100vh; }
      揃え、行内の四角の高さを一致させる。 */
   .post-meta {
     display: grid;
-    grid-template-columns: repeat(3, max-content);
+    grid-template-columns: max-content minmax(0, max-content) max-content;
     gap: 14px 10px;
   }
-  /* 2 行目「2020-01-17 / 118THMOBIUS / 1 MIN」は列を内容幅にして 1 行に収める（360px 幅まで）。
-     320px 級の端末では字間を詰めて収める（0.24em → 0.14em で約 30px 短くなる）。 */
+  /* 2 行目「2020-01-17 / 118THMOBIUS / 1 MIN」は 1 行に収める。日付と読了時間は内容幅、
+     著者名の列だけ縮められるようにし、長い名前は末尾を … で省略する（行は折り返さない）。
+     320px 級の端末では字間を詰める（0.24em → 0.14em で約 30px 短くなる）。 */
+  .post-meta .post-author { overflow: hidden; text-overflow: ellipsis; }
   @media (max-width: 359px) { .post-meta { letter-spacing: 0.14em; } }
   .post-meta .kicker {
     grid-column: 1 / -1;
