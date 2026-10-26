@@ -85,6 +85,11 @@ body { min-height: 100vh; }
   text-transform: uppercase;
   opacity: 0.8;
 }
+/* 記事のメタ行は「2020-01-17 / 118THMOBIUS / 1 MIN」。著者名と読了時間の前に / を置く
+   （kicker の末尾 / と同じ語彙）。ラベル語は使わず、項目は折り返さない。 */
+.post-meta span { white-space: nowrap; }
+.post-meta .post-author::before,
+.post-meta .post-read::before { content: "/ "; }
 
 .post-title {
   margin-top: clamp(24px, 4vh, 40px);
@@ -523,12 +528,8 @@ body { min-height: 100vh; }
     grid-template-columns: repeat(3, max-content);
     gap: 14px 10px;
   }
-  /* 2 行目は「2020-01-17 / 118THMOBIUS / 1 MIN」の 1 行に収める: READ — のラベルを消し、
-     著者名と読了時間の前に / を置く（kicker の末尾 / と同じ語彙）。列は内容幅で折り返しを禁じ、
-     360px 幅までは本文カラムに収まる。 */
-  .post-meta span { white-space: nowrap; }
-  .post-meta .post-read-label { display: none; }
-  /* 320px 級の端末では字間を詰めて 1 行に収める（0.24em → 0.14em で約 30px 短くなる）。 */
+  /* 2 行目「2020-01-17 / 118THMOBIUS / 1 MIN」は列を内容幅にして 1 行に収める（360px 幅まで）。
+     320px 級の端末では字間を詰めて収める（0.24em → 0.14em で約 30px 短くなる）。 */
   @media (max-width: 359px) { .post-meta { letter-spacing: 0.14em; } }
   .post-meta .post-author::before,
   .post-meta .post-read::before { content: "/ "; }

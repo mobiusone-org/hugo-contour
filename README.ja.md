@@ -104,8 +104,8 @@ theme = "contour"
 `<meta name="theme-color">` には背景色（`params.bg`、未指定ならテーマ既定）を出し、
 モバイルブラウザの枠色をページに合わせる。ライト/ダーク切り替えにも追従する。
 
-`page.html` はセクション内の記事（`posts/`）では日付・著者（`params.author`、ラベル無しの名前のみ）・
-読了時間・タグ・前後ナビを出し、
+`page.html` はセクション内の記事（`posts/`）では `日付 / 著者 / N min` のメタ行
+（著者は `params.author`、名前のみ）・タグ・前後ナビを出し、
 ルート直下の単体ページ（`feature.md` など）では見出しと本文だけにする。
 
 Markdown から描かれる見出しには `id` と、自身を指す `#` リンク（`.heading-anchor`）が付く。
