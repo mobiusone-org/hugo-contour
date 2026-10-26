@@ -531,8 +531,6 @@ body { min-height: 100vh; }
   /* 2 行目「2020-01-17 / 118THMOBIUS / 1 MIN」は列を内容幅にして 1 行に収める（360px 幅まで）。
      320px 級の端末では字間を詰めて収める（0.24em → 0.14em で約 30px 短くなる）。 */
   @media (max-width: 359px) { .post-meta { letter-spacing: 0.14em; } }
-  .post-meta .post-author::before,
-  .post-meta .post-read::before { content: "/ "; }
   .post-meta .kicker {
     grid-column: 1 / -1;
     justify-self: start;
