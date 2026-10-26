@@ -4,11 +4,14 @@
     <header>
       {{- /* kicker は所属セクション名（例: posts/）。ルート直下ページ（profile 等）は
              セクションが無いのでページ自身のタイトルを使う（archives/search と同じ流儀）。
-             日付は設定されているときだけ出す。読了時間は本文長から自動算出。 */ -}}
+             日付は設定されているときだけ出す。著者は site.Params.author があるセクション内の記事だけ、
+             ラベル無しの名前のみで出す。読了時間は本文長から自動算出。
+             並びは「2020-01-17 / 118thmobius / 1 min」で、区切りの / は CSS（::before）が付ける。 */ -}}
       <div class="post-meta">
         <span class="kicker">{{ if .Section }}{{ .CurrentSection.Title }}{{ else }}{{ .Title }}{{ end }}/</span>
         {{ if not .Date.IsZero }}<span>{{ .Date.Format (site.Params.dateFormat | default "2006-01-02") }}</span>{{ end }}
-        <span>Read — {{ .ReadingTime }} min</span>
+        {{ if .Section }}{{ with site.Params.author }}<span class="post-author">{{ . }}</span>{{ end }}{{ end }}
+        <span class="post-read">{{ .ReadingTime }} min</span>
       </div>
       <h1 class="post-title">{{ .Title }}</h1>
       {{- /* 共有チップはタイトル直下。サイト設定 showShare で全体を、front matter の share で
