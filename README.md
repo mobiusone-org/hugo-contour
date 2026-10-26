@@ -91,7 +91,7 @@ theme = "contour"
 | File | Layout | Purpose |
 |---|---|---|
 | `content/_index.md` | `home.html` | Landing page with full-screen contour lines and the menu |
-| `content/posts/_index.md` | `section.html` | Post list |
+| `content/posts/_index.md` | `section.html` | Post list with a summary per entry |
 | `content/posts/*.md` | `page.html` | Article pages with a left sidebar and body content |
 | `content/feature.md` | `page.html` | Standalone page without date or reading time |
 | `content/archives.md` | `archives.html` | Yearly article archive (`layout = "archives"`) |
@@ -103,6 +103,15 @@ itself (`.heading-anchor`): always visible, light-weight and dimmed, on the
 heading's baseline. It is the heading's own size, except on the large h2 where
 it is 0.8em. Set `showHeadingAnchors = false` in
 `[params]` to omit the link.
+
+Post lists (section, tag and search pages) show each entry's title, date and a
+one-paragraph summary: the front matter `description` if set, otherwise the
+text before `<!--more-->` or the first `summaryLength` words, cut to 140
+characters. The yearly archive stays compact with title and date only.
+
+`<meta name="theme-color">` carries the background colour (`params.bg`, or the
+theme default) so mobile browser chrome matches the page; the light/dark toggle
+keeps it in sync.
 
 For pages in the `posts/` section, `page.html` displays the date, reading time,
 tags, and previous/next navigation. For standalone pages at the content root,
