@@ -85,6 +85,11 @@ body { min-height: 100vh; }
   text-transform: uppercase;
   opacity: 0.8;
 }
+/* 記事のメタ行は「2020-01-17 / 118THMOBIUS / 1 MIN」。著者名と読了時間の前に / を置く
+   （kicker の末尾 / と同じ語彙）。ラベル語は使わず、項目は折り返さない。 */
+.post-meta span { white-space: nowrap; }
+.post-meta .post-author::before,
+.post-meta .post-read::before { content: "/ "; }
 
 .post-title {
   margin-top: clamp(24px, 4vh, 40px);
@@ -100,6 +105,9 @@ body { min-height: 100vh; }
   font-size: 15px;
   font-weight: 400;
   line-height: 1.95;
+  /* 裸の URL や長い識別子は空白が無く折り返せないので、狭い画面では必要な位置で切って
+     本文カラムからはみ出さないようにする。pre は white-space: pre なので影響しない。 */
+  overflow-wrap: anywhere;
 }
 .post-body p { margin-bottom: 1.7em; }
 
@@ -394,24 +402,50 @@ body { min-height: 100vh; }
 .is-copied .share-icon { display: none; }
 .is-copied .share-icon-done { display: block; }
 
+/* ---- 前後記事ナビ ----
+   左右 2 列の等幅グリッド。中央の gap を挟んで、各列は「< NEXT / PREV >」のラベル行と
+   記事タイトル行の 2 段。左が新しい記事（.next）、右が古い記事（.prev）。タイトルは長さを
+   問わず列幅に折り返し、最大 2 行（狭い画面では 3 行）で省略する。片方しか無いときも列位置は固定。 */
 .post-nav {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
   margin-top: clamp(32px, 5vh, 56px);
   padding-top: 24px;
   border-top: 1px solid rgba(var(--fg-rgb), 0.4);
 }
 .post-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
   color: var(--fg);
   text-decoration: none;
+  padding: 6px 10px;
+}
+.post-nav .next { grid-column: 1; }
+.post-nav .prev { grid-column: 2; text-align: right; padding-right: 0; }
+/* 右寄せの行末省略記号（…）は Chrome だと overflow: hidden の右端で切れて見えない。
+   右列はリンクの右パディング 10px の代わりに、ラベルとタイトルの内側に 1em の余白を取り、
+   省略記号をその中に描かせる（行末は揃ったまま）。 */
+.post-nav .prev .post-nav-label,
+.post-nav .prev .post-nav-title { padding-right: 1em; }
+.post-nav-label {
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 6px 10px;
 }
-.post-nav .next { text-align: right; }
+.post-nav-title {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 
 /* ---- 404（未踏区画） ----
    地図データが届かないまま、それ以外は正常に動いているコンソールの演出。
@@ -515,14 +549,21 @@ body { min-height: 100vh; }
   }
   .lang-switch { flex-direction: row-reverse; }
   .post { padding-left: 24px; padding-right: 24px; }
+  /* 列幅が狭いぶん、前後記事のタイトルは 3 行まで見せる。 */
+  .post-nav-title { -webkit-line-clamp: 3; }
   /* post-meta は 2 行のグリッドにする: 1 行目 = kicker（右側は操作群のオーバーレイ）、
      2 行目 = 日付・読了時間など。kicker は操作群のチップと同じ高さ（--toggle-size）に
      揃え、行内の四角の高さを一致させる。 */
   .post-meta {
     display: grid;
-    grid-template-columns: max-content max-content 1fr;
-    gap: 14px 18px;
+    grid-template-columns: max-content minmax(0, max-content) max-content;
+    gap: 14px 10px;
   }
+  /* 2 行目「2020-01-17 / 118THMOBIUS / 1 MIN」は 1 行に収める。日付と読了時間は内容幅、
+     著者名の列だけ縮められるようにし、長い名前は末尾を … で省略する（行は折り返さない）。
+     320px 級の端末では字間を詰める（0.24em → 0.14em で約 30px 短くなる）。 */
+  .post-meta .post-author { overflow: hidden; text-overflow: ellipsis; }
+  @media (max-width: 359px) { .post-meta { letter-spacing: 0.14em; } }
   .post-meta .kicker {
     grid-column: 1 / -1;
     justify-self: start;
