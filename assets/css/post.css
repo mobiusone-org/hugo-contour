@@ -394,24 +394,50 @@ body { min-height: 100vh; }
 .is-copied .share-icon { display: none; }
 .is-copied .share-icon-done { display: block; }
 
+/* ---- 前後記事ナビ ----
+   左右 2 列の等幅グリッド。中央の gap を挟んで、各列は「< NEXT / PREV >」のラベル行と
+   記事タイトル行の 2 段。左が新しい記事（.next）、右が古い記事（.prev）。タイトルは長さを
+   問わず列幅に折り返し、最大 2 行（狭い画面では 3 行）で省略する。片方しか無いときも列位置は固定。 */
 .post-nav {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
   margin-top: clamp(32px, 5vh, 56px);
   padding-top: 24px;
   border-top: 1px solid rgba(var(--fg-rgb), 0.4);
 }
 .post-nav a {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
   color: var(--fg);
   text-decoration: none;
+  padding: 6px 10px;
+}
+.post-nav .next { grid-column: 1; }
+.post-nav .prev { grid-column: 2; text-align: right; padding-right: 0; }
+/* 右寄せの行末省略記号（…）は Chrome だと overflow: hidden の右端で切れて見えない。
+   右列はリンクの右パディング 10px の代わりに、ラベルとタイトルの内側に 1em の余白を取り、
+   省略記号をその中に描かせる（行末は揃ったまま）。 */
+.post-nav .prev .post-nav-label,
+.post-nav .prev .post-nav-title { padding-right: 1em; }
+.post-nav-label {
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  padding: 6px 10px;
 }
-.post-nav .next { text-align: right; }
+.post-nav-title {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
 
 /* ---- 404（未踏区画） ----
    地図データが届かないまま、それ以外は正常に動いているコンソールの演出。
@@ -515,6 +541,8 @@ body { min-height: 100vh; }
   }
   .lang-switch { flex-direction: row-reverse; }
   .post { padding-left: 24px; padding-right: 24px; }
+  /* 列幅が狭いぶん、前後記事のタイトルは 3 行まで見せる。 */
+  .post-nav-title { -webkit-line-clamp: 3; }
   /* post-meta は 2 行のグリッドにする: 1 行目 = kicker（右側は操作群のオーバーレイ）、
      2 行目 = 日付・読了時間など。kicker は操作群のチップと同じ高さ（--toggle-size）に
      揃え、行内の四角の高さを一致させる。 */

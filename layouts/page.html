@@ -29,10 +29,13 @@
     </nav>
     {{ end }}
 
+    {{- /* 前後記事ナビ。一覧は新しい順なので、左 = NEXT（Hugo の .NextInSection = 新しい記事）、
+           右 = PREV（.PrevInSection = 古い記事）。各列はラベル行（< NEXT / PREV >）と記事タイトル行で、
+           タイトルは最大 2 行（狭い画面では 3 行）で切る（CSS）。片方しか無いときも列位置は固定。 */ -}}
     {{ if and .Section (or .PrevInSection .NextInSection) }}
     <nav class="post-nav">
-      {{ with .PrevInSection }}<a class="prev" href="{{ .RelPermalink }}">← Prev — {{ .Title }}</a>{{ else }}<span></span>{{ end }}
-      {{ with .NextInSection }}<a class="next" href="{{ .RelPermalink }}">Next — {{ .Title }} →</a>{{ else }}<span></span>{{ end }}
+      {{ with .NextInSection }}<a class="next" rel="next" href="{{ .RelPermalink }}"><span class="post-nav-label">&lt; Next</span><span class="post-nav-title">{{ .Title }}</span></a>{{ end }}
+      {{ with .PrevInSection }}<a class="prev" rel="prev" href="{{ .RelPermalink }}"><span class="post-nav-label">Prev &gt;</span><span class="post-nav-title">{{ .Title }}</span></a>{{ end }}
     </nav>
     {{ end }}
   </article>
