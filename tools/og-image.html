@@ -383,7 +383,7 @@
     contour.regenerate();
   });
 
-  document.getElementById('btn-download').addEventListener('click', async () => {
+  async function renderStageCanvas() {
     if (document.fonts && document.fonts.ready) {
       await document.fonts.ready;
     }
@@ -530,8 +530,144 @@
         cursor += ctx.measureText(ch).width + track;
       }
       ctx.restore();
+    } else {
+      function drawTrackedLeft(text, x, y, trackingPx) {
+        const chars = Array.from(text.toUpperCase());
+        let cur = x;
+        for (const ch of chars) {
+          ctx.fillText(ch, cur, y);
+          cur += ctx.measureText(ch).width + trackingPx;
+        }
+      }
+
+      // 1. Section kicker chip
+      const secEl = document.getElementById('og-post-section');
+      const sr = secEl.getBoundingClientRect();
+      const sx = sr.left - stageRect.left;
+      const sy = sr.top - stageRect.top;
+      ctx.save();
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(sx, sy, sr.width, sr.height);
+      ctx.strokeStyle = fgColor;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(sx + 0.5, sy + 0.5, sr.width - 1, sr.height - 1);
+      ctx.fillStyle = fgColor;
+      ctx.font = `500 11px ${fontFamily}`;
+      ctx.textBaseline = 'middle';
+      drawTrackedText(secEl.textContent.trim(), sx + sr.width / 2, sy + sr.height / 2, 11 * 0.12);
+      ctx.restore();
+
+      // 2. Date & author in meta row
+      const dateEl = document.getElementById('og-post-date');
+      const authorEl = document.getElementById('og-post-author');
+      ctx.save();
+      ctx.font = `300 12px ${fontFamily}`;
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = fgColor;
+      ctx.globalAlpha = 0.85;
+      const metaTrack = 12 * 0.24;
+      if (dateEl.style.display !== 'none' && dateEl.textContent.trim()) {
+        const dr = dateEl.getBoundingClientRect();
+        drawTrackedLeft(dateEl.textContent.trim(), dr.left - stageRect.left, dr.top - stageRect.top + dr.height / 2, metaTrack);
+      }
+      if (authorEl.style.display !== 'none' && authorEl.textContent.trim()) {
+        const ar = authorEl.getBoundingClientRect();
+        const prefix = authorEl.classList.contains('og-meta-sep') ? '/ ' : '';
+        drawTrackedLeft(prefix + authorEl.textContent.trim(), ar.left - stageRect.left, ar.top - stageRect.top + ar.height / 2, metaTrack);
+      }
+      ctx.restore();
+
+      // 3. Post title (extract exact wrapped lines from the DOM text node)
+      const postTitleEl = document.getElementById('og-post-title');
+      const ptr = postTitleEl.getBoundingClientRect();
+      const ptx = ptr.left - stageRect.left;
+      const pty = ptr.top - stageRect.top;
+      const titleFontSize = 50;
+      const titleLineHeight = titleFontSize * 1.3;
+      const titleTrack = -0.02 * titleFontSize;
+      ctx.save();
+      ctx.font = `700 ${titleFontSize}px ${fontFamily}`;
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = fgColor;
+
+      const textNode = postTitleEl.firstChild;
+      const lines = [];
+      if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+        postTitleEl.style.webkitLineClamp = 'unset';
+        const full = textNode.nodeValue || '';
+        const range = document.createRange();
+        let lineTop = null;
+        let current = '';
+        for (let i = 0; i < full.length; ) {
+          const cp = full.codePointAt(i);
+          const ch = String.fromCodePoint(cp);
+          range.setStart(textNode, i);
+          range.setEnd(textNode, i + ch.length);
+          const r = range.getBoundingClientRect();
+          if (!/\s/.test(ch) && (r.width > 0 || r.height > 0)) {
+            if (lineTop === null || Math.abs(r.top - lineTop) > titleFontSize * 0.5) {
+              if (current) lines.push(current.trimEnd());
+              current = ch;
+              lineTop = r.top;
+            } else {
+              current += ch;
+            }
+          } else {
+            current += ch;
+          }
+          i += ch.length;
+        }
+        if (current.trimEnd()) lines.push(current.trimEnd());
+        postTitleEl.style.webkitLineClamp = '';
+      } else {
+        lines.push(postTitle);
+      }
+
+      const maxLines = 3;
+      const visibleLines = lines.slice(0, maxLines);
+      if (lines.length > maxLines && visibleLines.length === maxLines) {
+        visibleLines[maxLines - 1] = visibleLines[maxLines - 1].replace(/\s+$/, '').slice(0, -1) + '…';
+      }
+      visibleLines.forEach((line, idx) => {
+        const ly = pty + (idx + 0.5) * titleLineHeight;
+        let cur = ptx;
+        for (const ch of Array.from(line.trimEnd())) {
+          ctx.fillText(ch, cur, ly);
+          cur += ctx.measureText(ch).width + titleTrack;
+        }
+      });
+      ctx.restore();
+
+      // 4. Bottom-left site brand
+      const brandEl = document.getElementById('og-post-brand');
+      const br = brandEl.getBoundingClientRect();
+      const bx = br.left - stageRect.left;
+      const by = br.top - stageRect.top + br.height / 2;
+      const brandSize = 26;
+      const brandTrack = -0.04 * brandSize;
+      ctx.save();
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = fgColor;
+      ctx.font = `700 ${brandSize}px ${fontFamily}`;
+      let bCur = bx;
+      for (const ch of Array.from(brandNameEl.textContent)) {
+        ctx.fillText(ch, bCur, by);
+        bCur += ctx.measureText(ch).width + brandTrack;
+      }
+      ctx.globalAlpha = 0.6;
+      ctx.font = `300 ${brandSize}px ${fontFamily}`;
+      for (const ch of Array.from(brandTldEl.textContent)) {
+        ctx.fillText(ch, bCur, by);
+        bCur += ctx.measureText(ch).width + brandTrack;
+      }
+      ctx.restore();
     }
 
+    return out;
+  }
+
+  document.getElementById('btn-download').addEventListener('click', async () => {
+    const out = await renderStageCanvas();
     out.toBlob(blob => {
       if (!blob) return;
       const url = URL.createObjectURL(blob);
