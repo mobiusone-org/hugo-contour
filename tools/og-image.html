@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1200, initial-scale=1.0">
+<title>Contour — OG Image Generator (1200×630)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;500;700&family=IBM+Plex+Sans+JP:wght@400;700&display=block" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: "IBM Plex Mono", "IBM Plex Sans JP", "SF Mono", Menlo, monospace;
+  }
+
+  /* When opened in a larger browser window, center the 1200x630 stage and show controls.
+     At an exact 1200x630 viewport (e.g. headless screenshot), the stage fills the viewport. */
+  @media (min-width: 1201px), (min-height: 631px) {
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      background: #0b0d10;
+    }
+    .og-stage {
+      outline: 1px solid rgba(var(--fg-rgb), 0.25);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.55);
+    }
+    .og-toolbar {
+      display: flex !important;
+    }
+  }
+
+  .og-stage {
+    position: relative;
+    width: 1200px;
+    height: 630px;
+    flex: 0 0 auto;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--fg);
+  }
+
+  .og-stage .contour-canvas {
+    position: absolute;
+    inset: 0;
+  }
+
+  .og-stage .field-frame {
+    position: absolute;
+    inset: 0;
+    --axis-max: calc(630px - var(--frame-pad) * 2 - 32px);
+    --coords-max: calc(1200px - var(--frame-pad) * 2 - 32px);
+  }
+
+  /* ---- Site default card: logo + kicker on the contour field ---- */
+  .og-stage .logo-group {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .og-stage[data-align="left"] .logo-group,
+  .og-stage[data-align="center"] .logo-group {
+    top: 50%;
+    left: 108px;
+    transform: translateY(-50%);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .og-stage[data-align="center"] .logo-group {
+    left: 50%;
+    transform: translate(-50%, -50%);
+    align-items: center;
+    text-align: center;
+  }
+
+  .og-stage[data-align="left"] .site-title,
+  .og-stage[data-align="center"] .site-title {
+    writing-mode: horizontal-tb;
+    font-size: 84px;
+    line-height: 1;
+    letter-spacing: -0.05em;
+    color: var(--fg);
+  }
+
+  .og-stage[data-align="left"] .logo-kicker,
+  .og-stage[data-align="center"] .logo-kicker {
+    writing-mode: horizontal-tb;
+    border-color: var(--fg) !important;
+    background: var(--bg) !important;
+    color: var(--fg) !important;
+  }
+
+  /* Vertical left layout: matches the landing/sidebar vertical logo directly on the field. */
+  .og-stage[data-align="vertical"] .logo-group {
+    top: 50%;
+    left: 76px;
+    transform: translateY(-50%);
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .og-stage[data-align="vertical"] .site-title {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    font-size: 68px;
+    line-height: 0.75;
+    letter-spacing: -0.05em;
+    color: var(--fg);
+  }
+
+  .og-stage[data-align="vertical"] .logo-kicker {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    border-color: var(--fg) !important;
+    background: var(--bg) !important;
+    color: var(--fg) !important;
+  }
+
+  /* ---- Per-post card: post meta + post title + site brand ---- */
+  .og-post,
+  .og-post-brand {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .og-stage[data-mode="post"] .logo-group {
+    display: none;
+  }
+
+  .og-stage[data-mode="post"] .og-post {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    left: 96px;
+    right: 116px;
+    top: 46%;
+    transform: translateY(-50%);
+  }
+
+  .og-post-meta {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 18px;
+    font-size: 12px;
+    font-weight: 300;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+  }
+
+  .og-post-meta span {
+    white-space: nowrap;
+  }
+
+  .og-post-meta .og-meta-item {
+    opacity: 0.85;
+  }
+
+  .og-post-meta .og-meta-sep::before {
+    content: "/ ";
+  }
+
+  .og-post-title {
+    margin-top: 26px;
+    font-size: 50px;
+    font-weight: 700;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    color: var(--fg);
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+    overflow-wrap: anywhere;
+  }
+
+  .og-stage[data-mode="post"] .og-post-brand {
+    display: block;
+    left: 96px;
+    bottom: 80px;
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--fg);
+  }
+
+  .og-post-brand .tld {
+    font-weight: 300;
+    opacity: 0.6;
+  }
+
+  .og-toolbar {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg);
+  }
+
+  .og-toolbar button {
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    padding: 8px 12px;
+    border: 1px solid var(--fg);
+    background: var(--bg);
+    color: var(--fg);
+    cursor: pointer;
+    transition: background .2s, color .2s;
+  }
+
+  .og-toolbar button:hover {
+    background: var(--fg);
+    color: var(--bg);
+  }
+
+  .og-toolbar .hint {
+    opacity: 0.7;
+  }
+</style>
+</head>
+<body>
+
+<div class="og-stage" id="og-stage" data-align="left">
+  <canvas id="terrain" class="contour-canvas" data-contour data-contour-frame="og"></canvas>
+
+  <div class="field-frame" data-contour-frame="og">
+    <span class="mark tl" aria-hidden="true"></span>
+    <span class="mark tr" aria-hidden="true"></span>
+    <span class="mark bl" aria-hidden="true"></span>
+    <span class="mark br" aria-hidden="true"></span>
+    <span class="axis" id="og-axis">Elevation / Isoline Field — N=54</span>
+    <span class="coords" id="og-coords" data-contour-coords data-contour-frame="og">35.6812° N — 139.7671° E</span>
+  </div>
+
+  <div class="logo-group" id="og-logo-group">
+    <span class="kicker logo-kicker" id="og-kicker">Topographic Theme for Hugo</span>
+    <span class="site-title" id="og-title"><span id="og-logo-name">Contour</span><span class="tld" id="og-logo-tld"> theme</span></span>
+  </div>
+
+  <div class="og-post" id="og-post">
+    <div class="og-post-meta" id="og-post-meta">
+      <span class="kicker" id="og-post-section">Posts/</span>
+      <span class="og-meta-item" id="og-post-date"></span>
+      <span class="og-meta-item og-meta-sep" id="og-post-author"></span>
+    </div>
+    <div class="og-post-title" id="og-post-title"></div>
+  </div>
+
+  <div class="og-post-brand" id="og-post-brand">
+    <span id="og-brand-name">Contour</span><span class="tld" id="og-brand-tld"> theme</span>
+  </div>
+</div>
+
+<div class="og-toolbar">
+  <button type="button" id="btn-regenerate">Regenerate terrain</button>
+  <button type="button" id="btn-download">Download PNG (1200×630)</button>
+  <span class="hint">Click canvas to regenerate</span>
+</div>
+
+<script src="../assets/js/contour.js"></script>
+<script type="module">
+  const params = new URLSearchParams(window.location.search);
+
+  function hexToRgb(hex) {
+    const clean = hex.trim().replace(/^#/, '');
+    const full = clean.length === 3
+      ? clean.split('').map(c => c + c).join('')
+      : clean;
+    const n = parseInt(full, 16);
+    if (Number.isNaN(n) || full.length !== 6) return null;
+    return `${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}`;
+  }
+
+  const fg = params.get('fg') || '#f7faf9';
+  const bg = params.get('bg') || '#05366e';
+  const fgRgb = hexToRgb(fg);
+  const bgRgb = hexToRgb(bg);
+  const root = document.documentElement;
+  if (fgRgb) {
+    root.style.setProperty('--fg-src', fg);
+    root.style.setProperty('--fg-src-rgb', fgRgb);
+  }
+  if (bgRgb) {
+    root.style.setProperty('--bg-src', bg);
+    root.style.setProperty('--bg-src-rgb', bgRgb);
+  }
+  if (params.get('theme') === 'light') {
+    root.setAttribute('data-theme', 'light');
+  }
+
+  const stage = document.getElementById('og-stage');
+  const align = params.get('align') || 'left';
+  stage.setAttribute('data-align', align);
+
+  const logoGroup = document.getElementById('og-logo-group');
+  const logoNameEl = document.getElementById('og-logo-name');
+  const logoTldEl = document.getElementById('og-logo-tld');
+  const brandNameEl = document.getElementById('og-brand-name');
+  const brandTldEl = document.getElementById('og-brand-tld');
+  const kickerEl = document.getElementById('og-kicker');
+  const titleEl = document.getElementById('og-title');
+  const axisEl = document.getElementById('og-axis');
+  const coordsEl = document.getElementById('og-coords');
+
+  if (align === 'vertical') {
+    // Match _partials/logo.html order (site-title then kicker) for vertical-rl.
+    logoGroup.insertBefore(titleEl, kickerEl);
+  }
+
+  if (params.has('logoName')) {
+    logoNameEl.textContent = params.get('logoName');
+    brandNameEl.textContent = params.get('logoName');
+  }
+  if (params.has('logoTLD')) {
+    logoTldEl.textContent = params.get('logoTLD');
+    brandTldEl.textContent = params.get('logoTLD');
+  }
+  if (params.has('kicker')) {
+    const k = params.get('kicker');
+    if (k) kickerEl.textContent = k;
+    else kickerEl.style.display = 'none';
+  }
+  if (params.has('axis')) axisEl.textContent = params.get('axis');
+  if (params.has('coords')) coordsEl.textContent = params.get('coords');
+
+  const postTitle = params.get('title');
+  if (postTitle) {
+    stage.setAttribute('data-mode', 'post');
+    document.getElementById('og-post-title').textContent = postTitle;
+    const sec = (params.get('section') || 'posts').replace(/\/+$/, '') + '/';
+    document.getElementById('og-post-section').textContent = sec;
+    const dateEl = document.getElementById('og-post-date');
+    const authorEl = document.getElementById('og-post-author');
+    const dateVal = params.get('date') || '';
+    const authorVal = params.get('author') || '';
+    if (dateVal) dateEl.textContent = dateVal;
+    else dateEl.style.display = 'none';
+    if (authorVal) {
+      authorEl.textContent = authorVal;
+      if (!dateVal) authorEl.classList.remove('og-meta-sep');
+    } else {
+      authorEl.style.display = 'none';
+    }
+  }
+
+  const seed = params.get('seed');
+  const lockCoords = params.has('coords') && params.get('lockCoords') !== '0';
+  const cell = Number(params.get('cell')) || 10;
+  const canvas = document.getElementById('terrain');
+
+  const contour = Contour.create(canvas, {
+    color: '--fg-rgb',
+    cell,
+    seed,
+    onRegenerate: ({ lat, lon }) => {
+      if (!lockCoords) {
+        coordsEl.textContent = Contour.formatCoords(lat, lon);
+      }
+    },
+  });
+
+  document.getElementById('btn-regenerate').addEventListener('click', () => {
+    contour.regenerate();
+  });
+
+  document.getElementById('btn-download').addEventListener('click', async () => {
+    if (document.fonts && document.fonts.ready) {
+      await document.fonts.ready;
+    }
+    const W = 1200, H = 630, PAD = 36;
+    const out = document.createElement('canvas');
+    out.width = W;
+    out.height = H;
+    const ctx = out.getContext('2d');
+
+    const cs = getComputedStyle(root);
+    const bgColor = cs.getPropertyValue('--bg').trim();
+    const fgColor = cs.getPropertyValue('--fg').trim();
+    const fontFamily = getComputedStyle(document.body).fontFamily;
+
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(0, 0, W, H);
+    ctx.drawImage(canvas, 0, 0, W, H);
+
+    // Four corner + marks (16px, 1px stroke)
+    ctx.strokeStyle = fgColor;
+    ctx.lineWidth = 1;
+    const arm = 8;
+    for (const [cx, cy] of [[PAD, PAD], [W - PAD, PAD], [PAD, H - PAD], [W - PAD, H - PAD]]) {
+      ctx.beginPath();
+      ctx.moveTo(cx - arm, cy); ctx.lineTo(cx + arm, cy);
+      ctx.moveTo(cx, cy - arm); ctx.lineTo(cx, cy + arm);
+      ctx.stroke();
+    }
+
+    function drawTrackedText(text, x, y, trackingPx) {
+      const chars = Array.from(text.toUpperCase());
+      const widths = chars.map(ch => ctx.measureText(ch).width);
+      const total = widths.reduce((a, b) => a + b, 0) + Math.max(0, chars.length - 1) * trackingPx;
+      let cur = x - total / 2;
+      for (let i = 0; i < chars.length; i++) {
+        ctx.fillText(chars[i], cur, y);
+        cur += widths[i] + trackingPx;
+      }
+      return total;
+    }
+
+    // Bottom coords label + rules
+    ctx.save();
+    ctx.font = `300 11px ${fontFamily}`;
+    ctx.textBaseline = 'middle';
+    const coordsText = coordsEl.textContent.trim().toUpperCase();
+    const coordsTrack = 11 * 0.12;
+    const coordsChars = Array.from(coordsText);
+    const coordsTextW = coordsChars.reduce((s, c) => s + ctx.measureText(c).width, 0) +
+                        Math.max(0, coordsChars.length - 1) * coordsTrack;
+    const ruleLen = 48, gap = 14, padX = 12;
+    const coordsTotalW = ruleLen * 2 + gap * 2 + coordsTextW + padX * 2;
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(W / 2 - coordsTotalW / 2, H - PAD - 10, coordsTotalW, 20);
+    ctx.globalAlpha = 0.9;
+    ctx.fillStyle = fgColor;
+    ctx.strokeStyle = fgColor;
+    drawTrackedText(coordsText, W / 2, H - PAD, coordsTrack);
+    ctx.beginPath();
+    ctx.moveTo(W / 2 - coordsTextW / 2 - gap - ruleLen, H - PAD);
+    ctx.lineTo(W / 2 - coordsTextW / 2 - gap, H - PAD);
+    ctx.moveTo(W / 2 + coordsTextW / 2 + gap, H - PAD);
+    ctx.lineTo(W / 2 + coordsTextW / 2 + gap + ruleLen, H - PAD);
+    ctx.stroke();
+    ctx.restore();
+
+    // Right vertical axis label + rules
+    ctx.save();
+    ctx.translate(W - PAD, H / 2);
+    ctx.rotate(Math.PI / 2);
+    ctx.font = `300 11px ${fontFamily}`;
+    ctx.textBaseline = 'middle';
+    const axisText = axisEl.textContent.trim().toUpperCase();
+    const axisTrack = 11 * 0.32;
+    const axisChars = Array.from(axisText);
+    const axisTextW = axisChars.reduce((s, c) => s + ctx.measureText(c).width, 0) +
+                      Math.max(0, axisChars.length - 1) * axisTrack;
+    const axisTotalW = ruleLen * 2 + gap * 2 + axisTextW + padX * 2;
+    ctx.fillStyle = bgColor;
+    ctx.fillRect(-axisTotalW / 2, -10, axisTotalW, 20);
+    ctx.globalAlpha = 0.7;
+    ctx.fillStyle = fgColor;
+    ctx.strokeStyle = fgColor;
+    drawTrackedText(axisText, 0, 0, axisTrack);
+    ctx.beginPath();
+    ctx.moveTo(-axisTextW / 2 - gap - ruleLen, 0);
+    ctx.lineTo(-axisTextW / 2 - gap, 0);
+    ctx.moveTo(axisTextW / 2 + gap, 0);
+    ctx.lineTo(axisTextW / 2 + gap + ruleLen, 0);
+    ctx.stroke();
+    ctx.restore();
+
+    const stageRect = stage.getBoundingClientRect();
+    if (!postTitle && kickerEl.style.display !== 'none') {
+      const kr = kickerEl.getBoundingClientRect();
+      const kx = kr.left - stageRect.left;
+      const ky = kr.top - stageRect.top;
+      ctx.save();
+      ctx.fillStyle = bgColor;
+      ctx.fillRect(kx, ky, kr.width, kr.height);
+      ctx.strokeStyle = fgColor;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(kx + 0.5, ky + 0.5, kr.width - 1, kr.height - 1);
+      ctx.fillStyle = fgColor;
+      ctx.font = `500 11px ${fontFamily}`;
+      ctx.textBaseline = 'middle';
+      if (align === 'vertical') {
+        ctx.translate(kx + kr.width / 2, ky + kr.height / 2);
+        ctx.rotate(Math.PI / 2);
+        drawTrackedText(kickerEl.textContent.trim(), 0, 0, 11 * 0.12);
+      } else {
+        drawTrackedText(kickerEl.textContent.trim(), kx + kr.width / 2, ky + kr.height / 2, 11 * 0.12);
+      }
+      ctx.restore();
+    }
+
+    if (!postTitle) {
+      ctx.save();
+      const tr = titleEl.getBoundingClientRect();
+      const tx = tr.left - stageRect.left;
+      const ty = tr.top - stageRect.top;
+      const fontSize = align === 'vertical' ? 68 : 84;
+      if (align === 'vertical') {
+        ctx.translate(tx + tr.width / 2, ty);
+        ctx.rotate(Math.PI / 2);
+      } else {
+        ctx.translate(tx, ty + tr.height / 2);
+      }
+      ctx.textBaseline = 'middle';
+      ctx.fillStyle = fgColor;
+      ctx.font = `700 ${fontSize}px ${fontFamily}`;
+      const nameStr = logoNameEl.textContent;
+      const tldStr = logoTldEl.textContent;
+      const track = -0.05 * fontSize;
+      let cursor = 0;
+      for (const ch of Array.from(nameStr)) {
+        ctx.fillText(ch, cursor, 0);
+        cursor += ctx.measureText(ch).width + track;
+      }
+      ctx.globalAlpha = 0.6;
+      ctx.font = `300 ${fontSize}px ${fontFamily}`;
+      for (const ch of Array.from(tldStr)) {
+        ctx.fillText(ch, cursor, 0);
+        cursor += ctx.measureText(ch).width + track;
+      }
+      ctx.restore();
+    }
+
+    out.toBlob(blob => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = params.get('filename') || 'og-default.png';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 1000);
+    }, 'image/png');
+  });
+
+  if (document.fonts) {
+    try {
+      await Promise.all([
+        document.fonts.load('300 11px "IBM Plex Mono"', axisEl.textContent + coordsEl.textContent),
+        document.fonts.load('500 11px "IBM Plex Mono"', kickerEl.textContent + 'POSTS/'),
+        document.fonts.load('300 84px "IBM Plex Mono"', logoTldEl.textContent),
+        document.fonts.load('700 84px "IBM Plex Mono"', logoNameEl.textContent),
+        postTitle ? document.fonts.load('700 50px "IBM Plex Mono"', postTitle) : Promise.resolve(),
+        postTitle ? document.fonts.load('700 50px "IBM Plex Sans JP"', postTitle) : Promise.resolve(),
+      ]);
+      await document.fonts.ready;
+    } catch {}
+  }
+</script>
+</body>
+</html>

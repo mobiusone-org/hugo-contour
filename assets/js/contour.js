@@ -26,6 +26,21 @@
            `${Math.abs(lon).toFixed(4)}° ${lon >= 0 ? 'E' : 'W'}`;
   }
 
+  /* 文字列/数値シードから決定論的な 0..1 乱数列を作る（FNV-1a + Mulberry32）。 */
+  function createPRNG(seed) {
+    let h = 2166136261 >>> 0;
+    const str = String(seed);
+    for (let i = 0; i < str.length; i++) {
+      h = Math.imul(h ^ str.charCodeAt(i), 16777619) >>> 0;
+    }
+    return () => {
+      h = (h + 0x6D2B79F5) >>> 0;
+      let t = Math.imul(h ^ (h >>> 15), 1 | h);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
   function create(canvas, options) {
     const opts = Object.assign({
       color: '--fg-rgb', // 線色: CSS カスタムプロパティ名 or "r, g, b"
@@ -33,9 +48,12 @@
       lattice: 0,        // >0 なら等高線の代わりに + ラティスを描く（目標間隔 css px）
       scale: 0.0021,     // noise frequency
       levels: 54,        // number of iso lines
+      seed: null,        // 指定時は地形と座標を決定論的に生成する
       interactive: true, // クリックで地形を再生成する
       onRegenerate: null, // ({ lat, lon }) => void
     }, options);
+    const hasSeed = opts.seed !== null && opts.seed !== undefined && opts.seed !== '';
+    const rand = hasSeed ? createPRNG(opts.seed) : Math.random;
     // 線色が CSS カスタムプロパティ名なら、その名前を保持して render() ごとに読み直す。
     // これでテーマ切り替え（--*-rgb の入れ替え）に追従して再描画できる（初回解決も render が行う）。
     const colorVar = opts.color.startsWith('--') ? opts.color : null;
@@ -48,7 +66,7 @@
       perm = new Uint8Array(512);
       const p = Uint8Array.from({ length: 256 }, (_, i) => i);
       for (let i = 255; i > 0; i--) {
-        const j = (Math.random() * (i + 1)) | 0;
+        const j = (rand() * (i + 1)) | 0;
         [p[i], p[j]] = [p[j], p[i]];
       }
       for (let i = 0; i < 512; i++) perm[i] = p[i & 255];
@@ -94,8 +112,8 @@
 
     /* ---------- field + marching squares ---------- */
     let cols, rows, field, dpr, width, height;
-    let z = Math.random() * 100;
-    let waterFrac = 0.4 + Math.random() * 0.2; // 水面下の割合 40〜60%
+    let z = rand() * 100;
+    let waterFrac = 0.4 + rand() * 0.2; // 水面下の割合 40〜60%
 
     function resize() {
       dpr = Math.min(global.devicePixelRatio || 1, 2);
@@ -226,12 +244,12 @@
 
     function regenerate() {
       reseed();
-      z = Math.random() * 100;
-      waterFrac = 0.4 + Math.random() * 0.2;
+      z = rand() * 100;
+      waterFrac = 0.4 + rand() * 0.2;
       if (opts.onRegenerate) {
         opts.onRegenerate({
-          lat: Math.random() * 180 - 90,
-          lon: Math.random() * 360 - 180,
+          lat: rand() * 180 - 90,
+          lon: rand() * 360 - 180,
         });
       }
       render();
@@ -241,6 +259,12 @@
     global.addEventListener('resize', () => { resize(); render(); });
 
     reseed();
+    if (hasSeed && opts.onRegenerate) {
+      opts.onRegenerate({
+        lat: rand() * 180 - 90,
+        lon: rand() * 360 - 180,
+      });
+    }
     resize();
     render();
 
