@@ -13,8 +13,12 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import unicodedata
 from pathlib import Path
 from urllib.parse import urlencode
+
+
+IMAGE_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg", ".avif", ".bmp", ".tiff", ".tif"}
 
 
 CHROME_CANDIDATES = (
@@ -116,33 +120,84 @@ def normalize_date(raw: str) -> str:
     return m.group(1) if m else ""
 
 
-def resolve_post_route(content_dir: Path, md_path: Path, default_lang: str) -> tuple[str, str] | None:
+def normalize_hugo_path(s: str) -> str:
+    """Match Hugo's paths.NormalizePathStringBasic (NFC + lowercase + ASCII spaces to hyphens)."""
+    return unicodedata.normalize("NFC", s).lower().replace(" ", "-")
+
+
+def resolve_post_route(
+    content_dir: Path,
+    md_path: Path,
+    default_lang: str,
+    site_langs: set[str],
+    lang_content_dirs: list[tuple[str, Path]],
+) -> tuple[str, str] | None:
     """Return (out_rel_png, seed) for a post markdown file, or None if bundle has a cover image."""
-    rel = md_path.relative_to(content_dir)
+    lang = ""
+    rel: Path | None = None
+    for lang_code, cdir in lang_content_dirs:
+        if md_path.is_relative_to(cdir):
+            rel = md_path.relative_to(cdir)
+            lang = lang_code
+            break
+    if rel is None:
+        rel = md_path.relative_to(content_dir)
+
     stem = md_path.stem
-    if stem == "_index" or stem.startswith("_index."):
+    stem_lower = stem.lower()
+    if stem_lower == "_index" or stem_lower.startswith("_index."):
         return None
 
-    lang = ""
     if "." in stem:
         base_stem, maybe_lang = stem.rsplit(".", 1)
-        if re.fullmatch(r"[a-z]{2}(?:-[a-zA-Z0-9]+)?", maybe_lang):
+        if maybe_lang.lower() in site_langs:
             stem = base_stem
-            lang = maybe_lang
+            lang = maybe_lang.lower()
 
-    if stem == "index":
+    if stem.lower() == "index":
         for sibling in md_path.parent.iterdir():
-            if sibling.is_file() and any(k in sibling.stem.lower() for k in ("feature", "cover", "thumbnail")):
+            if (
+                sibling.is_file()
+                and sibling.suffix.lower() in IMAGE_EXTENSIONS
+                and any(k in sibling.stem.lower() for k in ("feature", "cover", "thumbnail"))
+            ):
                 return None
-        page_rel = rel.parent.as_posix()
+        raw_page_rel = rel.parent.as_posix()
     else:
-        page_rel = (rel.parent / stem).as_posix()
+        raw_page_rel = (rel.parent / stem).as_posix()
 
+    page_rel = normalize_hugo_path(raw_page_rel)
     if lang and lang != default_lang:
         out_rel = f"{lang}/{page_rel}.png"
     else:
         out_rel = f"{page_rel}.png"
     return out_rel, page_rel
+
+
+def collect_managed_existing_files(
+    out_root: Path,
+    target_sections: set[str],
+    non_default_langs: set[str],
+) -> dict[str, Path]:
+    """Return {rel_posix: Path} for existing PNGs under out_root that belong to target_sections."""
+    existing: dict[str, Path] = {}
+    if not out_root.is_dir():
+        return existing
+    for path in sorted(out_root.rglob("*.png")):
+        rel = path.relative_to(out_root)
+        parts = rel.parts
+        if not parts:
+            continue
+        first = normalize_hugo_path(parts[0])
+        in_default_sec = len(parts) >= 2 and first in target_sections
+        in_lang_sec = (
+            len(parts) >= 3
+            and first in non_default_langs
+            and normalize_hugo_path(parts[1]) in target_sections
+        )
+        if in_default_sec or in_lang_sec:
+            existing[rel.as_posix()] = path
+    return existing
 
 
 def main() -> int:
@@ -170,14 +225,25 @@ def main() -> int:
 
     cfg = load_site_config(site_root, tool_html, args.environment)
     params = cfg.get("params") or {}
-    default_lang = cfg.get("defaultcontentlanguage") or "ja"
+    default_lang = (cfg.get("defaultcontentlanguage") or "ja").lower()
+    langs_cfg = cfg.get("languages") or {}
+    site_langs = {k.lower() for k in langs_cfg.keys()} | {default_lang}
+    non_default_langs = site_langs - {default_lang}
+    lang_content_dirs: list[tuple[str, Path]] = []
+    for lang_code, lang_entry in langs_cfg.items():
+        if isinstance(lang_entry, dict) and lang_entry.get("contentdir"):
+            cdir = (site_root / lang_entry["contentdir"]).resolve()
+            if cdir.is_dir():
+                lang_content_dirs.append((lang_code.lower(), cdir))
+    lang_content_dirs.sort(key=lambda item: len(item[1].parts), reverse=True)
+
     fg = params.get("fg") or "#f7faf9"
     bg = params.get("bg") or "#05366e"
     logo_name = params.get("logoname") or cfg.get("title") or "Contour"
     logo_tld = params.get("logotld") or ""
     axis = params.get("axis") or "Elevation / Isoline Field"
     author = params.get("author") or ""
-    target_sections = set(args.sections or params.get("mainsections") or ["posts"])
+    target_sections = {normalize_hugo_path(s) for s in (args.sections or params.get("mainsections") or ["posts"])}
 
     rows = list_eligible_pages(
         site_root,
@@ -191,13 +257,14 @@ def main() -> int:
     chrome_bin = find_chrome()
     generated = 0
     skipped = 0
-    expected_outputs: set[Path] = set()
+    expected_rel_outputs: set[str] = set()
+    existing_files = collect_managed_existing_files(out_root, target_sections, non_default_langs)
 
     with tempfile.TemporaryDirectory(prefix="contour-og-chrome-") as profile_dir:
         for row in rows:
             if row.get("kind") != "page":
                 continue
-            section = row.get("section", "")
+            section = normalize_hugo_path(row.get("section", ""))
             if section not in target_sections:
                 continue
             title = row.get("title", "").strip()
@@ -210,17 +277,20 @@ def main() -> int:
                 skipped += 1
                 continue
 
-            route = resolve_post_route(content_dir, md_path, default_lang)
+            route = resolve_post_route(content_dir, md_path, default_lang, site_langs, lang_content_dirs)
             if route is None:
                 skipped += 1
                 continue
             out_rel, seed = route
             out_path = (out_root / out_rel).resolve()
-            expected_outputs.add(out_path)
+            expected_rel_outputs.add(out_rel)
 
-            if out_path.is_file() and not args.force:
+            if out_rel in existing_files and not args.force:
                 skipped += 1
                 continue
+
+            for old_rel in [k for k in existing_files if k.lower() == out_rel.lower() and k != out_rel]:
+                existing_files.pop(old_rel).unlink(missing_ok=True)
 
             out_path.parent.mkdir(parents=True, exist_ok=True)
             query = urlencode({
@@ -253,11 +323,10 @@ def main() -> int:
             print(f"generated {out_path.relative_to(site_root)} (seed={seed})")
 
     removed = 0
-    if out_root.is_dir():
-        for existing in sorted(out_root.rglob("*.png")):
-            if existing.resolve() not in expected_outputs:
-                existing.unlink()
-                removed += 1
+    for existing_rel, existing_path in sorted(existing_files.items()):
+        if existing_rel not in expected_rel_outputs:
+            existing_path.unlink(missing_ok=True)
+            removed += 1
 
     print(f"done: {generated} generated, {skipped} skipped, {removed} stale removed")
     return 0
