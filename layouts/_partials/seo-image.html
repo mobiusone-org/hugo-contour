@@ -2,7 +2,8 @@
        url が空なら画像なし。探す順は Hugo の慣習に合わせる:
          1. front matter の images（配列。先頭を使う）/ image（文字列）
          2. ページバンドル内の画像で名前に feature / cover / thumbnail を含むもの
-         3. site.Params.images（サイト既定。先頭を使う）
+         3. 事前生成されたページ別 OG 画像（static/images/og/[<lang>/]<path>.png）
+         4. site.Params.images（サイト既定。先頭を使う）
        パスはページバンドル → グローバル assets → static/ 直配置の順で解決し、
        実寸（width / height）が取れるときだけ返す（render-image.html と同じ流儀）。 */ -}}
 {{- $src := "" -}}
@@ -11,6 +12,16 @@
 {{- if not $src }}{{ with .Params.image }}{{ $src = . }}{{ end }}{{ end -}}
 {{- if and (not $src) .IsPage }}
   {{- with (.Resources.ByType "image").GetMatch "{*feature*,*cover*,*thumbnail*}" }}{{ $res = . }}{{ end -}}
+{{- end -}}
+{{- if and (not $src) (not $res) .IsPage .Path }}
+  {{- $defaultLang := hugo.Sites.Default.Language.Lang -}}
+  {{- $candidates := slice (printf "/images/og%s.png" .Path) -}}
+  {{- if ne .Language.Lang $defaultLang }}
+    {{- $candidates = slice (printf "/images/og/%s%s.png" .Language.Lang .Path) | append $candidates -}}
+  {{- end -}}
+  {{- range $candidates }}
+    {{- if and (not $src) (fileExists (printf "static%s" .)) }}{{ $src = . }}{{ end -}}
+  {{- end -}}
 {{- end -}}
 {{- if and (not $src) (not $res) }}
   {{- with site.Params.images }}{{ $src = cond (reflect.IsSlice .) (index . 0) . }}{{ end -}}

@@ -198,8 +198,13 @@ icons are the theme's own line drawings.
   `article:published_time` / `modified_time` / `section` / `tag`.
 - A representative `og:image` (with width / height when they can be read),
   resolved from front matter `images` (list) or `image`, then a bundle image
-  named `*feature*` / `*cover*` / `*thumbnail*`, then `params.images`. The
-  recommended size is 1200×630.
+  named `*feature*` / `*cover*` / `*thumbnail*`, then a pre-generated per-page
+  image at `static/images/og/[<lang>/]<path>.png` (if present), then
+  `params.images`. The recommended size is 1200×630. Use `tools/og-image.html`
+  in a browser to export a site-default card, or run
+  `python3 themes/contour/tools/generate-og-images.py` (requires Chrome /
+  Chromium) before `hugo` to batch-generate deterministic per-post cards into
+  `static/images/og/`.
 - `twitter:card`: `summary_large_image` for landscape images, `summary` for
   square ones. Other values are omitted because X falls back to `og:*`.
 - JSON-LD: `WebSite` on the home page and `BlogPosting` for pages under
