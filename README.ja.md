@@ -182,7 +182,11 @@ LinkedIn は利用規約が第三者によるロゴ使用を認めておらず�
   `locale` から）。記事には `article:published_time` / `modified_time` / `section` / `tag` も。
 - 代表画像 `og:image`（実寸が分かれば width / height も）。探す順は front matter の
   `images`（配列）または `image` → ページバンドル内の `*feature*` / `*cover*` / `*thumbnail*`
-  画像 → `params.images`。`og:image` 推奨サイズは 1200×630 です。
+  画像 → 事前生成されたページ別画像 `static/images/og/[<lang>/]<path>.png`（存在する場合）
+  → `params.images`。`og:image` 推奨サイズは 1200×630 です。サイト既定のカードは
+  `tools/og-image.html` をブラウザで開いて PNG を書き出せます。また、`hugo` ビルド前に
+  `python3 themes/contour/tools/generate-og-images.py`（要 Chrome / Chromium）を実行すると、
+  記事ごとのタイトル・日付・シード付き等高線カードを `static/images/og/` に一括生成できます。
 - `twitter:card`。横長の画像なら `summary_large_image`、正方形などは `summary`。
   他の値は `og:*` が読まれるので出しません。
 - JSON-LD。ホームは `WebSite`、`posts/` 配下の記事は `BlogPosting`
