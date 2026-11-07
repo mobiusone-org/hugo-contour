@@ -70,6 +70,7 @@ theme = "contour"
   description = "サイトの説明。"
   author = "Your Name"                        # author メタと JSON-LD の著者
   images = ["/images/og-default.png"]         # 共有プレビュー画像の既定（static/ 配下）
+  # imageAlt = "等高線カード"                   # その画像の代替テキスト（og:image:alt）。既定はサイト名
   axis = "Elevation / Isoline Field — N=54"   # 地図ふう装飾ラベル
   coords = "35.6812° N — 139.7671° E"          # 座標表示の初期値（クリックで更新）
 
@@ -180,17 +181,22 @@ LinkedIn は利用規約が第三者によるロゴ使用を認めておらず�
 - 翻訳版がある場合の `hreflang`（既定言語を `x-default` として併記）。
 - Open Graph（`og:type` は記事なら `article`、他は `website`。`og:locale` は言語の
   `locale` から）。記事には `article:published_time` / `modified_time` / `section` / `tag` も。
-- 代表画像 `og:image`（実寸が分かれば width / height も）。探す順は front matter の
+- 代表画像 `og:image`（実寸が分かれば `og:image:width` / `height`、ファイル種別から
+  `og:image:type`、代替テキスト `og:image:alt` も）。探す順は front matter の
   `images`（配列）または `image` → ページバンドル内の `*feature*` / `*cover*` / `*thumbnail*`
   画像 → 事前生成されたページ別画像 `static/images/og/[<lang>/]<path>.png`（存在する場合）
-  → `params.images`。`og:image` 推奨サイズは 1200×630 です。サイト既定のカードは
+  → `params.images`。代替テキストは front matter の `imageAlt` → ページ固有の画像なら
+  ページタイトル → `params.imageAlt` → サイト名の順（420 文字で切ります）。
+  `og:image` 推奨サイズは 1200×630 です。サイト既定のカードは
   `tools/og-image.html` をブラウザで開いて PNG を書き出せます。また、`hugo` ビルド前に
   `python3 themes/contour/tools/generate-og-images.py`（要 Chrome / Chromium）を実行すると、
   記事ごとのタイトル・日付・シード付き等高線カードを `static/images/og/` に一括生成できます。
-- `twitter:card`。横長の画像なら `summary_large_image`、正方形などは `summary`。
-  他の値は `og:*` が読まれるので出しません。
+- `twitter:card`（横長の画像なら `summary_large_image`、正方形などは `summary`）と、同じ画像の
+  `twitter:image` / `twitter:image:alt`。`twitter:title` / `description` は `og:*` が読まれるので
+  出しませんが、画像は X 以外のサービスやバリデータが直接見るので明示します。
+  `og:image:secure_url` は URL が既に `https` なので出しません。
 - JSON-LD。ホームは `WebSite`、`posts/` 配下の記事は `BlogPosting`
-  （headline / datePublished / dateModified / author / image / keywords）。
+  （headline / datePublished / dateModified / author / 実寸付き `ImageObject` の image / keywords）。
 
 ### 画像（図版）
 
