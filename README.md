@@ -4,6 +4,13 @@
 
 A stylish Hugo theme that blends contour-line motifs with typography.
 
+![Contour home page: a vertical logo panel beside a full-screen contour-line field and the numbered menu](images/readme/home-light.png)
+
+<p>
+  <img src="images/readme/post-light.png" alt="A post page in the light theme" width="49%">
+  <img src="images/readme/post-dark.png" alt="The same post page in the dark theme" width="49%">
+</p>
+
 - Built on Hugo's new template system (`baseof.html` / `home.html` /
   `page.html` / `section.html` / `taxonomy.html` / `term.html`, with the
   reserved `_partials` and `_markup` directories).
