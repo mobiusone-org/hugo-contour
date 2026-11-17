@@ -4,6 +4,13 @@
 
 A stylish Hugo theme that blends contour-line motifs with typography.
 
+![Contour home page: a vertical logo panel beside a full-screen contour-line field and the numbered menu](images/readme/home-light.png)
+
+<p>
+  <img src="images/readme/post-light.png" alt="A post page in the light theme" width="49%">
+  <img src="images/readme/post-dark.png" alt="The same post page in the dark theme" width="49%">
+</p>
+
 - Built on Hugo's new template system (`baseof.html` / `home.html` /
   `page.html` / `section.html` / `taxonomy.html` / `term.html`, with the
   reserved `_partials` and `_markup` directories).
@@ -72,6 +79,7 @@ theme = "contour"
   description = "Site description."
   author = "Your Name"                        # author meta and JSON-LD author
   images = ["/images/og-default.png"]         # Default share-preview image (under static/)
+  # imageAlt = "Contour map card"             # Alt text for that image (og:image:alt); defaults to the site title
   axis = "Elevation / Isoline Field - N=54"   # Map-style decorative label
   coords = "35.6812 deg N - 139.7671 deg E"   # Initial coordinates, refreshed on click
 
@@ -196,19 +204,26 @@ icons are the theme's own line drawings.
 - Open Graph: `og:type` is `article` for posts and `website` elsewhere;
   `og:locale` comes from the language's `locale`. Posts also get
   `article:published_time` / `modified_time` / `section` / `tag`.
-- A representative `og:image` (with width / height when they can be read),
-  resolved from front matter `images` (list) or `image`, then a bundle image
-  named `*feature*` / `*cover*` / `*thumbnail*`, then a pre-generated per-page
-  image at `static/images/og/[<lang>/]<path>.png` (if present), then
-  `params.images`. The recommended size is 1200×630. Use `tools/og-image.html`
-  in a browser to export a site-default card, or run
+- A representative `og:image` (with `og:image:width` / `height` when they can
+  be read, `og:image:type` from the file type, and `og:image:alt`), resolved
+  from front matter `images` (list) or `image`, then a bundle image named
+  `*feature*` / `*cover*` / `*thumbnail*`, then a pre-generated per-page image
+  at `static/images/og/[<lang>/]<path>.png` (if present), then `params.images`.
+  The alt text is front matter `imageAlt`, else the page title when the image
+  is page-specific, else `params.imageAlt`, else the site title (cut at 420
+  characters). The recommended size is 1200×630. Use `tools/og-image.html` in a
+  browser to export a site-default card, or run
   `python3 themes/contour/tools/generate-og-images.py` (requires Chrome /
   Chromium) before `hugo` to batch-generate deterministic per-post cards into
   `static/images/og/`.
-- `twitter:card`: `summary_large_image` for landscape images, `summary` for
-  square ones. Other values are omitted because X falls back to `og:*`.
+- `twitter:card` (`summary_large_image` for landscape images, `summary` for
+  square ones), plus `twitter:image` and `twitter:image:alt` for the same
+  image. `twitter:title` / `description` are omitted because X reads `og:*`;
+  the image tags are explicit because other consumers and validators look for
+  them. `og:image:secure_url` is not emitted (the URL is already `https`).
 - JSON-LD: `WebSite` on the home page and `BlogPosting` for pages under
-  `posts/` (headline, datePublished, dateModified, author, image, keywords).
+  `posts/` (headline, datePublished, dateModified, author, image as an
+  `ImageObject` with width / height, keywords).
 
 ### Images (plates)
 
