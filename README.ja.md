@@ -4,6 +4,13 @@
 
 等高線をモチーフにTypographyを取り込んだスタイリッシュなHugoテーマ。
 
+![Contour のホーム: 縦組みのロゴパネルと全画面の等高線、番号付きメニュー](images/readme/home-light.png)
+
+<p>
+  <img src="images/readme/post-light.png" alt="記事ページ（ライトテーマ）" width="49%">
+  <img src="images/readme/post-dark.png" alt="同じ記事ページ（ダークテーマ）" width="49%">
+</p>
+
 - Hugo の新しいテンプレートシステム（`baseof.html` / `home.html` / `page.html` /
   `section.html` / `taxonomy.html` / `term.html`、予約ディレクトリ `_partials` と `_markup`）に準拠。
 - タグ（タクソノミー）・アーカイブ・全文検索を標準でサポート。
